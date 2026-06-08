@@ -5,6 +5,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const auth_1 = require("../controller/auth");
+const isAuth_1 = require("../middlewaves/isAuth");
 const router = express_1.default.Router();
 router.post("/login", auth_1.loginUser);
+router.put("/add/role", isAuth_1.isAuth, auth_1.addUserRole);
+router.get("/me", isAuth_1.isAuth, auth_1.myProfile);
 exports.default = router;

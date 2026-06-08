@@ -4,7 +4,7 @@ import express from 'express'
 
 import { connect } from 'mongoose'
 import connectDB from './config/db'
-import authRoute from "./routes/auth.js"
+import authRoute from "./routes/auth"
 
 
 dotenv.config()
