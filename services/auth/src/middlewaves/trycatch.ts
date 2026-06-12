@@ -7,8 +7,12 @@ const TryCatch = (handler: RequestHandler,):RequestHandler =>{
             await handler (req, res, next)   
         }
         catch(err:any){
+            console.error("========== ERROR ==========")
+            console.error(err)
+            console.error("===========================")
+
             res.status(500).json({
-                message:err.message,
+                message: err.message,
             })
         }
     }
