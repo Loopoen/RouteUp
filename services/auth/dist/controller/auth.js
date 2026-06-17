@@ -63,6 +63,11 @@ exports.addUserRole = (0, trycatch_1.default)(async (req, res) => {
     res.json({ user, token });
 });
 exports.myProfile = (0, trycatch_1.default)(async (req, res) => {
-    const user = req.user;
-    res.json(user);
+    try {
+        const user = req.user;
+        res.json(user);
+    }
+    catch (err) {
+        console.log(err);
+    }
 });

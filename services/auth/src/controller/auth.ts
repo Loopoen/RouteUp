@@ -94,6 +94,11 @@ export const addUserRole = TryCatch(async(req:AuthenticatedRequest, res)=>{
 })
 
 export const myProfile = TryCatch(async(req:AuthenticatedRequest, res)=>{
-    const user = req.user
+    try{
+        const user = req.user
     res.json(user)
+    }
+    catch(err){
+        console.log(err)
+    }
 })
