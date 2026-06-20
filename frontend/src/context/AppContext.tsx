@@ -1,7 +1,7 @@
 import { Children, createContext, useContext, useEffect, useState, type ReactNode } from "react";
 import { authServices } from "../main";
 import axios from "axios";
-import type { AppContextType } from "../type";
+import type { AppContextType, LocationData } from "../type";
 
 const AppContext = createContext(undefined)
 
@@ -16,7 +16,8 @@ export const AppProvider = ({children}: AppProviderProps)=>{
 
     const [loading, setLoading] = useState(false)
 
-    const [location, setLocation] = useState(null)
+    const [location, setLocation] = useState<LocationData | null>(null)
+    const [loadingLocation, setLoadingLocation] = useState(false)
 
     const [city, setCity] = useState("Fetching location ...")
 
@@ -56,7 +57,45 @@ export const AppProvider = ({children}: AppProviderProps)=>{
         fetchUser()
     }, [])
 
-    return <AppContext.Provider value={{isAuth, loading, setIsAuth, setLoading, setUser, user}}>
+    useEffect(()=>{
+        if(!navigator.geolocation) return alert("Cho phep truy cap vao dia chi cua ban...")
+
+        setLoadingLocation(true)
+
+        navigator.geolocation.getCurrentPosition(async(position)=>{
+            const { latitude, longitude } = position.coords
+
+            try{
+                const res= await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`)
+
+                const  data  = await res.json()
+
+                console.log("hehe",data)
+
+                setLocation({
+                    latitude,
+                    longitude,
+                    formattedAddress:data.display_name || "dia chi hien tai"
+            })
+
+                setCity(data.address.city || data.address.town || data.address.village || "dia chi cua ban")
+            }
+            catch(err){
+              setLocation({
+                latitude,
+                longitude,
+                formattedAddress:"Dia chi hien tai"
+              })
+
+              setCity("khong tim duoc thanh pho")
+            }
+        })
+
+
+
+    }, [])
+
+    return <AppContext.Provider value={{isAuth, loading, setIsAuth, setLoading, setUser, user, location, loadingLocation, city }}>
         {children}
     </AppContext.Provider>
 
