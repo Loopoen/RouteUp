@@ -3,7 +3,9 @@ import jwt, {JwtPayload} from 'jsonwebtoken';
 
 
 
+
 export interface IUser {
+    restaurantId: any;
     _id:string,
     name:string,
     email:string,
@@ -22,6 +24,7 @@ export const isAuth = async(req:AuthenticatedRequest, res:Response, next:NextFun
    
     try{
         const authHeader = req.headers.authorization
+        console.log(req.headers.authorization)
         if(!authHeader || !authHeader.startsWith("Bearer ")){
             res.status(401).json({
                 message:"dang nhap nhap loi khong co header"
@@ -59,3 +62,19 @@ export const isAuth = async(req:AuthenticatedRequest, res:Response, next:NextFun
     }
 }
 
+
+export const isSeller = async(req:AuthenticatedRequest, res:Response, next:NextFunction):Promise<void>=>{
+    const user = req.user
+    console.log(user)
+    
+    if(!user && !user.role ==="seller"){
+        
+        res.status(401).json({
+            message:"ban khong phai la seller"
+        })
+
+        return  
+    }
+
+    next()
+}

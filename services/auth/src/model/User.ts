@@ -4,7 +4,8 @@ export interface IUser extends Document{
     name:string,
     email:string,
     image:string,
-    role:string
+    role:string,
+    restaurantId:string
 }
 
 const schema: Schema<IUser> = new Schema({
@@ -24,7 +25,11 @@ const schema: Schema<IUser> = new Schema({
     role:{
         type:String,
         default:null
-    }
+    },
+    restaurantId:{
+    type:String,
+    default:null
+}
 },{
     timestamps:true,
 })

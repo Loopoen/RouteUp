@@ -51,6 +51,10 @@ const schema = new mongoose_1.Schema({
     role: {
         type: String,
         default: null
+    },
+    restaurantId: {
+        type: String,
+        default: null
     }
 }, {
     timestamps: true,

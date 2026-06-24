@@ -1,5 +1,4 @@
-import mongoose from "mongoose";
-import Schema from 'mongoose';
+import mongoose, { Schema } from "mongoose";
 const schema = new Schema({
     name: {
         type: String,
@@ -17,13 +16,17 @@ const schema = new Schema({
             emun: ["Point"],
             required: true
         },
-        coordinateds: {
+        coordinates: {
             type: [Number, Number],
             required: true
         },
         formattedAddress: {
             type: String,
-        }
+        },
+    },
+    isVerified: {
+        type: Boolean, // Kiểu dữ liệu phải là viết hoa chữ B: Boolean
+        default: false // Giá trị mặc định khi tạo mới là false
     },
     isOpen: {
         type: Boolean,

@@ -27,3 +27,26 @@ export interface AppContextType{
     
 }
 
+
+export interface IRestaurant {
+    _id:string,
+    name:string,
+    description?:string,
+    image:string,
+    ownerId:string,
+    phone:number,
+    isVerified:boolean
+
+    autoLocation:{
+        type:"Point",
+        coordinateds:[number, number],
+         formattedAddress:string,
+    
+    },
+       
+
+    isOpen:boolean,
+    createAt:Date
+
+}
+

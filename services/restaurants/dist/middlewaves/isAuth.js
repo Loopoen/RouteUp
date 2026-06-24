@@ -2,6 +2,7 @@ import jwt from 'jsonwebtoken';
 export const isAuth = async (req, res, next) => {
     try {
         const authHeader = req.headers.authorization;
+        console.log(req.headers.authorization);
         if (!authHeader || !authHeader.startsWith("Bearer ")) {
             res.status(401).json({
                 message: "dang nhap nhap loi khong co header"
@@ -31,4 +32,15 @@ export const isAuth = async (req, res, next) => {
             message: "loi dang nhap voi jwt"
         });
     }
+};
+export const isSeller = async (req, res, next) => {
+    const user = req.user;
+    console.log(user);
+    if (!user && !user.role === "seller") {
+        res.status(401).json({
+            message: "ban khong phai la seller"
+        });
+        return;
+    }
+    next();
 };

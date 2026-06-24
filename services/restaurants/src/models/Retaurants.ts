@@ -1,5 +1,5 @@
-import mongoose, { Document } from "mongoose";
-import Schema from 'mongoose';
+import mongoose, { Document , Schema} from "mongoose";
+
 
 export interface IRestaurant extends Document{
     name:string,
@@ -22,7 +22,7 @@ export interface IRestaurant extends Document{
 
 }
 
-const schema = new Schema<IRestaurant>(  {
+const schema = new Schema <IRestaurant>(  {
     name:{
         type:String,
         required:true,
@@ -42,15 +42,22 @@ const schema = new Schema<IRestaurant>(  {
             emun:["Point"],
             required:true
         },
-        coordinateds:{
+        coordinates:{
             type:[Number, Number],
             required:true
         },
         formattedAddress:{
             type:String,
-        }
+        },
+        
         
     },
+
+    isVerified: {
+    type: Boolean,     // Kiểu dữ liệu phải là viết hoa chữ B: Boolean
+    default: false     // Giá trị mặc định khi tạo mới là false
+}
+  
 
     isOpen:{
         type:Boolean,
