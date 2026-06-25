@@ -1,10 +1,18 @@
 import { useState } from "react";
+import { FaStore, FaPhone, FaImage } from "react-icons/fa";
+import { MdDescription, MdLocationOn } from "react-icons/md";
 import { useAppData } from "../context/AppContext";
 import axios from "axios";
 import { restaurantService } from "../main";
 import toast from "react-hot-toast";
 
-const AddRestaurant = () => {
+
+
+interface props{
+  fetchMyRestaurant:()=>Promise<void> 
+}
+
+const AddRestaurant = ({fetchMyRestaurant}:props) => {
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [phone, setPhone] = useState("");
@@ -15,7 +23,7 @@ const AddRestaurant = () => {
 
   const handleSubmit = async () => {
     if (!name || !image || !location) {
-      alert("Tất cả thông tin bắt buộc phải được nhập");
+      toast.error("Vui lòng nhập đầy đủ thông tin");
       return;
     }
 
@@ -28,6 +36,8 @@ const AddRestaurant = () => {
     formData.append("formatedAddress", location.formattedAddress);
     formData.append("file", image);
     formData.append("phone", phone);
+
+    console.log("one",localStorage.getItem("token"))
 
     try {
       setSubmitting(true);
@@ -43,6 +53,9 @@ const AddRestaurant = () => {
       );
 
       toast.success("Tạo nhà hàng thành công!");
+      await fetchMyRestaurant()
+
+
     } catch (err: any) {
       toast.error(err.response?.data?.message || "Có lỗi xảy ra");
     } finally {
@@ -51,101 +64,147 @@ const AddRestaurant = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 flex justify-center items-center p-6">
-      <div className="w-full max-w-2xl bg-white rounded-xl shadow-lg p-8">
-        <h2 className="text-3xl font-bold mb-6 text-center">
-          Thêm Nhà Hàng
-        </h2>
+    <div className="min-h-screen bg-gradient-to-br from-orange-100 via-white to-orange-50 flex justify-center items-center p-6">
+      <div className="w-full max-w-3xl backdrop-blur-lg bg-white/80 border border-white/20 shadow-2xl rounded-3xl p-8 animate-in fade-in duration-500">
 
-        <div className="space-y-5">
-          {/* Tên nhà hàng */}
+        <div className="flex items-center gap-3 mb-8">
+          <div className="bg-orange-500 text-white p-3 rounded-xl">
+            <FaStore size={24} />
+          </div>
+
           <div>
-            <label className="block mb-2 font-medium">
-              Tên nhà hàng *
+            <h2 className="text-3xl font-bold text-gray-800">
+              Thêm Nhà Hàng
+            </h2>
+            <p className="text-gray-500">
+              Đăng ký nhà hàng mới vào hệ thống
+            </p>
+          </div>
+        </div>
+
+        <div className="space-y-6">
+
+          {/* Tên */}
+          <div>
+            <label className="flex items-center gap-2 mb-2 font-medium">
+              <FaStore />
+              Tên nhà hàng
             </label>
+
             <input
               type="text"
-              placeholder="Nhập tên nhà hàng"
+              placeholder="Nhập tên nhà hàng..."
               value={name}
               onChange={(e) => setName(e.target.value)}
-              className="w-full border rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-orange-500"
+              className="w-full rounded-xl border border-gray-300 p-4 focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-all"
             />
           </div>
 
-          {/* Số điện thoại */}
+          {/* Phone */}
           <div>
-            <label className="block mb-2 font-medium">
+            <label className="flex items-center gap-2 mb-2 font-medium">
+              <FaPhone />
               Số điện thoại
             </label>
+
             <input
               type="text"
-              placeholder="Nhập số điện thoại"
+              placeholder="Nhập số điện thoại..."
               value={phone}
               onChange={(e) => setPhone(e.target.value)}
-              className="w-full border rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-orange-500"
+              className="w-full rounded-xl border border-gray-300 p-4 focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-all"
             />
           </div>
 
-          {/* Mô tả */}
+          
           <div>
-            <label className="block mb-2 font-medium">
+            <label className="flex items-center gap-2 mb-2 font-medium">
+              <MdDescription />
               Mô tả
             </label>
+
             <textarea
               rows={4}
               placeholder="Mô tả nhà hàng..."
               value={description}
               onChange={(e) => setDescription(e.target.value)}
-              className="w-full border rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-orange-500"
+              className="w-full rounded-xl border border-gray-300 p-4 resize-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-all"
             />
           </div>
 
-          {/* Ảnh */}
+          
           <div>
-            <label className="block mb-2 font-medium">
-              Hình ảnh *
+            <label className="flex items-center gap-2 mb-2 font-medium">
+              <FaImage />
+              Hình ảnh
             </label>
-            <input
-              type="file"
-              accept="image/*"
-              onChange={(e) =>
-                setImage(e.target.files?.[0] || null)
-              }
-              className="w-full border rounded-lg p-3"
-            />
+
+            <label className="cursor-pointer flex flex-col justify-center items-center border-2 border-dashed border-orange-300 rounded-2xl p-8 hover:bg-orange-50 transition-all">
+              <FaImage
+                size={40}
+                className="text-orange-500 mb-3"
+              />
+
+              <p className="text-gray-600">
+                Click để chọn ảnh
+              </p>
+
+              <input
+                hidden
+                type="file"
+                accept="image/*"
+                onChange={(e) =>
+                  setImage(e.target.files?.[0] || null)
+                }
+              />
+            </label>
 
             {image && (
-              <img
-                src={URL.createObjectURL(image)}
-                alt="Preview"
-                className="mt-4 h-40 w-full object-cover rounded-lg border"
-              />
+              <div className="mt-5 overflow-hidden rounded-2xl shadow-lg">
+                <img
+                  src={URL.createObjectURL(image)}
+                  alt="Preview"
+                  className="h-60 w-full object-cover hover:scale-105 transition duration-500"
+                />
+              </div>
             )}
           </div>
 
-          {/* Địa chỉ */}
+          {/* Location */}
           <div>
-            <label className="block mb-2 font-medium">
+            <label className="flex items-center gap-2 mb-2 font-medium">
+              <MdLocationOn />
               Địa chỉ hiện tại
             </label>
 
-            {loadingLocation ? (
-              <p className="text-gray-500">Đang lấy vị trí...</p>
-            ) : (
-              <div className="bg-gray-100 p-3 rounded-lg text-sm">
-                {location?.formattedAddress ||
-                  "Không lấy được vị trí"}
-              </div>
-            )}
+            <div className="bg-orange-50 border border-orange-200 rounded-xl p-4">
+              {loadingLocation ? (
+                <p className="text-gray-500">
+                  Đang lấy vị trí...
+                </p>
+              ) : (
+                <p className="text-gray-700">
+                  {location?.formattedAddress ||
+                    "Không lấy được vị trí"}
+                </p>
+              )}
+            </div>
           </div>
 
           {/* Button */}
           <button
             onClick={handleSubmit}
             disabled={submitting}
-            className="w-full bg-orange-500 hover:bg-orange-600 text-white font-semibold py-3 rounded-lg transition disabled:bg-gray-400"
+            className="w-full bg-gradient-to-r from-orange-500 to-red-500 text-white font-semibold py-4 rounded-xl hover:scale-[1.02] hover:shadow-xl transition-all duration-300 disabled:opacity-60"
           >
-            {submitting ? "Đang tạo..." : "Tạo Nhà Hàng"}
+            {submitting ? (
+              <div className="flex justify-center items-center gap-3">
+                <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                Đang tạo...
+              </div>
+            ) : (
+              " Tạo Nhà Hàng"
+            )}
           </button>
         </div>
       </div>

@@ -36,7 +36,7 @@ export const isAuth = async (req, res, next) => {
 export const isSeller = async (req, res, next) => {
     const user = req.user;
     console.log(user);
-    if (!user && !user.role === "seller") {
+    if (!user && user.role !== "seller") {
         res.status(401).json({
             message: "ban khong phai la seller"
         });

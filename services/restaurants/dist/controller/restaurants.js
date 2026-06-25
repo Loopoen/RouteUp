@@ -13,6 +13,7 @@ export const addRestaurant = TryCatch(async (req, res) => {
     const exitingRestaurant = await Retaurants.findOne({
         ownerId: user._id,
     });
+    console.log("hehe", user._id);
     if (exitingRestaurant) {
         return res.status(400).json({
             messaage: "ban thu su co 1 tong mon o day"
@@ -66,7 +67,7 @@ export const fetchRestaurant = TryCatch(async (req, res) => {
     const restaurant = await Retaurants.findOne({ ownerId: req.user._id });
     if (!restaurant) {
         return res.status(400).json({
-            message: "khong co user"
+            message: "khong co cua hang"
         });
     }
     if (!req.user.restaurantId) {
@@ -75,7 +76,7 @@ export const fetchRestaurant = TryCatch(async (req, res) => {
                 ...req.user,
                 restaurantId: restaurant._id,
             }
-        }, process.env.JWT_SECRETS, {
+        }, process.env.JWT_SECRET, {
             expiresIn: "15d"
         });
         return res.json({

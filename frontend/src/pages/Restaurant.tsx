@@ -3,6 +3,7 @@ import type { IRestaurant } from "../type";
 import { restaurantService } from "../main";
 import { useEffect, useState } from "react";
 import AddRestaurant from "../components/AddRestaurant";
+import { Toaster } from "react-hot-toast";
 
 
 
@@ -14,7 +15,7 @@ const Restaurant = () => {
     console.log("lo",localStorage.getItem("token"))
     const fetchMyRestaurant = async()=>{
         try{
-            const {data} = await axios.post(`${restaurantService}/api/restaurant/my`,{
+            const {data} = await axios.post(`${restaurantService}/api/restaurant/my`,{},{
                 headers:{
                     Authorization:`Bearer ${localStorage.getItem("token")}`
                 }
@@ -22,6 +23,11 @@ const Restaurant = () => {
 
             console.log("data", data)
             setRestaurants(data.restaurant || null)
+
+            // if(data.token){
+            //     localStorage.setItem("token", data.token)
+            //     window.location.reload()
+            // }
 
         }
         catch(err){
@@ -43,10 +49,11 @@ const Restaurant = () => {
     }
 
     if(!restaurants){
-        return <AddRestaurant/>
+        return <AddRestaurant fetchMyRestaurant={fetchMyRestaurant}/>
     }
   return (
     <div>
+        <Toaster/>
       <h2>Restaurant</h2>
     </div>
   );

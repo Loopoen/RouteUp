@@ -39,6 +39,9 @@ export const AppProvider = ({children}: AppProviderProps)=>{
               
             })
 
+            console.log("token =", token);
+console.log("authServices =", authServices);
+
               setUser(data)
               setIsAuth(true)
 

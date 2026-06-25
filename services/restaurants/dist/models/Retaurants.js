@@ -24,6 +24,9 @@ const schema = new Schema({
             type: String,
         },
     },
+    ownerId: {
+        type: String
+    },
     isVerified: {
         type: Boolean, // Kiểu dữ liệu phải là viết hoa chữ B: Boolean
         default: false // Giá trị mặc định khi tạo mới là false

@@ -21,6 +21,7 @@ function App() {
   return (
     <>
       <BrowserRouter>
+       <Toaster position="bottom-right" />
        <Navbar/>
           <Routes>
             <Route element={<PublicRoute />}>
@@ -38,7 +39,7 @@ function App() {
 
           </Routes>
 
-          <Toaster/>
+          
       </BrowserRouter>
     </>
   )
