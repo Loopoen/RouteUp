@@ -85,3 +85,50 @@ export const fetchRestaurant = TryCatch(async (req, res) => {
     }
     res.json({ restaurant });
 });
+export const updateStatusRestaurant = TryCatch(async (req, res) => {
+    if (!req.user) {
+        return res.status(403).json({
+            messsage: "loi login"
+        });
+    }
+    const { status } = req.body;
+    if (typeof status !== "boolean") {
+        return res.status(400).json({
+            mesage: "status phai la boolean"
+        });
+    }
+    const restaurant = await Retaurants.findOneAndUpdate({
+        ownerId: req.user._id,
+    }, {
+        isOpen: status
+    }, {
+        new: true
+    });
+    if (!restaurant) {
+        return res.status(404).json({
+            message: "mon phai do chua ton tai"
+        });
+    }
+    res.json({
+        message: "Đổi trạng thái thành công",
+        restaurant
+    });
+});
+export const updateRestaurant = TryCatch(async (req, res) => {
+    if (!req.user) {
+        return res.status(403).json({
+            message: "loi login"
+        });
+    }
+    const { name, description } = req.body;
+    const restaurant = await Retaurants.findOneAndUpdate({ ownerId: req.user._id }, { name: name, description: description }, { new: true });
+    if (!restaurant) {
+        return res.status(404).json({
+            message: "Không tìm thấy cửa hàng"
+        });
+    }
+    return res.json({
+        message: "Cập nhật thành công",
+        restaurant
+    });
+});
