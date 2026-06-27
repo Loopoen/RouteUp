@@ -5,6 +5,8 @@ import { useEffect, useState } from "react";
 import AddRestaurant from "../components/AddRestaurant";
 import { Toaster } from "react-hot-toast";
 import RestaurantProfile from "../components/RestaurantProfile";
+import MenuItem from "../components/MenuItem";
+import AddItem from "../components/AddItem";
 
 type SellerTab = "menu" | "add-item" | "sales";
 
@@ -128,27 +130,20 @@ const Restaurant = () => {
         {/* Content */}
         <div className="rounded-3xl overflow-hidden shadow-xl bg-white">
           {tab === "menu" && (
-            <RestaurantProfile
+           <>
+             <RestaurantProfile
               restaurant={restaurants}
               isSeller={true}
               onUpdate={setRestaurants}
             />
+
+            <MenuItem/>
+           
+           </>
           )}
 
           {tab === "add-item" && (
-            <div className="p-20 text-center">
-              <h2 className="text-4xl font-bold text-gray-800">
-                Add New Food
-              </h2>
-
-              <p className="text-gray-500 mt-4">
-                This page will contain the form for adding new menu items.
-              </p>
-
-              <button className="mt-8 px-8 py-4 bg-orange-500 text-white rounded-2xl hover:bg-orange-600 transition">
-                Add Food
-              </button>
-            </div>
+            <AddItem  onItemAdd={() => {}}/>
           )}
 
           {tab === "sales" && (
