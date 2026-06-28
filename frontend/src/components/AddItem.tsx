@@ -1,7 +1,10 @@
 import axios from "axios";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { restaurantService } from "../main";
+import MenuItem from "./MenuItem";
+import type { IMenuItem, IRestaurant } from "../type";
+import { FaImage, FaPlug, FaPlus, FaTimes, FaUtensils } from "react-icons/fa";
 
 const AddItem = ({ onItemAdd }: { onItemAdd: () => void }) => {
   const [name, setName] = useState("");
@@ -9,6 +12,63 @@ const AddItem = ({ onItemAdd }: { onItemAdd: () => void }) => {
   const [price, setPrice] = useState("");
   const [image, setImage] = useState<File | null>(null);
   const [loading, setLoading] = useState(false);
+  const [showForm, setShowForm] = useState(false);
+
+  const [preview, setPreview] = useState("");
+    const [restaurants, setRestaurants] = useState<IRestaurant | null>(null);
+  
+   const [menuItem, setMenuItem] = useState<IMenuItem[]>([])
+
+
+
+   const fetchMenuItems = async(restaurantId:string)=>{
+    try{
+      const {data} = await axios.get(`${restaurantService}/api/item/all/${restaurants._id}`,{
+        headers:{
+          Authorization: `Bearer ${localStorage.getItem("token")}`
+        }
+      })
+
+      console.log("data", data)
+
+      setMenuItem(data)
+    }
+
+
+    catch(err){
+      console.log(err)
+    }
+  }
+   useEffect(()=>{
+    if(restaurants?._id){
+      fetchMenuItems(restaurants._id)
+    }
+  }, [restaurants])
+
+
+  const fetchMyRestaurant = async () => {
+    try {
+      const { data } = await axios.post(
+        `${restaurantService}/api/restaurant/my`,
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
+      );
+
+      setRestaurants(data.restaurant || null);
+    } catch (err) {
+      console.log(err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchMyRestaurant();
+  }, []);
 
   const resetForm = () => {
     setName("");
@@ -58,86 +118,166 @@ const AddItem = ({ onItemAdd }: { onItemAdd: () => void }) => {
   };
 
   return (
-    <div className="max-w-2xl mx-auto bg-white rounded-3xl shadow-xl p-8">
-      <h2 className="text-3xl font-bold text-center mb-8">
-        🍽️ Thêm món ăn mới
-      </h2>
+  <div className="min-h-screen bg-gradient-to-br from-orange-50 via-white to-red-50 p-8">
 
-      <div className="space-y-5">
+    {/* Header */}
 
-        <div>
-          <label className="font-medium text-gray-700">
-            Tên món
-          </label>
+    <div className="max-w-7xl mx-auto flex justify-between items-center mb-8">
 
-          <input
-            type="text"
-            placeholder="Ví dụ: Pizza Hải Sản"
-            className="w-full mt-2 p-3 border rounded-xl focus:ring-2 focus:ring-orange-400 outline-none"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-          />
-        </div>
+      <div>
+        <h1 className="text-4xl font-black text-slate-800 flex items-center gap-3">
+          <FaUtensils className="text-orange-500" />
+          Menu Management
+        </h1>
 
-        <div>
-          <label className="font-medium text-gray-700">
-            Mô tả
-          </label>
-
-          <textarea
-            rows={4}
-            placeholder="Mô tả món ăn..."
-            className="w-full mt-2 p-3 border rounded-xl resize-none focus:ring-2 focus:ring-orange-400 outline-none"
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-          />
-        </div>
-
-        <div>
-          <label className="font-medium text-gray-700">
-            Giá
-          </label>
-
-          <input
-            type="number"
-            placeholder="100000"
-            className="w-full mt-2 p-3 border rounded-xl focus:ring-2 focus:ring-orange-400 outline-none"
-            value={price}
-            onChange={(e) => setPrice(e.target.value)}
-          />
-        </div>
-
-        <div>
-          <label className="font-medium text-gray-700">
-            Hình ảnh
-          </label>
-
-          <input
-            type="file"
-            accept="image/*"
-            className="w-full mt-2 border rounded-xl p-3"
-            onChange={(e) =>
-              setImage(e.target.files ? e.target.files[0] : null)
-            }
-          />
-
-          {image && (
-            <p className="text-sm text-gray-500 mt-2">
-              Đã chọn: {image.name}
-            </p>
-          )}
-        </div>
-
-        <button
-          disabled={loading}
-          onClick={handleSubmit}
-          className="w-full bg-orange-500 hover:bg-orange-600 transition text-white font-semibold py-3 rounded-xl disabled:bg-gray-400"
-        >
-          {loading ? "Đang thêm..." : "➕ Thêm món"}
-        </button>
+        <p className="text-slate-500 mt-2">
+          Manage all dishes in your restaurant
+        </p>
       </div>
+
+      <button
+        onClick={() => setShowForm(true)}
+        className="flex items-center gap-3 bg-gradient-to-r from-orange-500 to-red-500
+        text-white px-6 py-3 rounded-2xl shadow-xl hover:scale-105 transition"
+      >
+        <FaPlus />
+        Add Item
+      </button>
+
     </div>
-  );
+
+    {/* Modal */}
+
+    {showForm && (
+      <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50">
+
+        <div className="bg-white rounded-3xl shadow-2xl w-full max-w-xl p-8 relative animate-[fadeIn_.25s]">
+
+          <button
+            onClick={() => setShowForm(false)}
+            className="absolute right-6 top-6 text-2xl text-gray-500 hover:text-red-500"
+          >
+            <FaTimes />
+          </button>
+
+          <h2 className="text-3xl font-bold mb-8">
+            Add New Menu Item
+          </h2>
+
+          <div className="space-y-6">
+
+            {/* Upload */}
+
+            <label className="border-2 border-dashed border-orange-300 rounded-3xl h-60 flex flex-col justify-center items-center cursor-pointer hover:border-orange-500 transition">
+
+              {preview ? (
+                <img
+                  src={preview}
+                  className="w-full h-full object-cover rounded-3xl"
+                />
+              ) : (
+                <>
+                  <FaImage className="text-6xl text-orange-500 mb-4" />
+                  <p className="text-slate-500">
+                    Click to upload image
+                  </p>
+                </>
+              )}
+
+              <input
+                hidden
+                type="file"
+                onChange={(e) => {
+                  if (e.target.files) {
+                    setImage(e.target.files[0]);
+                    setPreview(URL.createObjectURL(e.target.files[0]));
+                  }
+                }}
+              />
+            </label>
+
+            <input
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              placeholder="Item name"
+              className="w-full rounded-2xl border-2 border-slate-200 focus:border-orange-500 outline-none px-5 py-4 transition"
+            />
+
+            <textarea
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              placeholder="Description"
+              rows={4}
+              className="w-full rounded-2xl border-2 border-slate-200 focus:border-orange-500 outline-none px-5 py-4 resize-none transition"
+            />
+
+            <input
+              type="number"
+              value={price}
+              onChange={(e) => setPrice(e.target.value)}
+              placeholder="Price"
+              className="w-full rounded-2xl border-2 border-slate-200 focus:border-orange-500 outline-none px-5 py-4 transition"
+            />
+
+            <div className="flex justify-end gap-4">
+
+              <button
+                onClick={() => {
+                  resetForm();
+                  setShowForm(false);
+                }}
+                className="px-6 py-3 rounded-2xl border border-slate-300 hover:bg-slate-100 transition"
+              >
+                Cancel
+              </button>
+
+              <button
+                disabled={loading}
+                onClick={async () => {
+                  await handleSubmit();
+                  setShowForm(false);
+
+                  if (restaurants?._id) {
+                    fetchMenuItems(restaurants._id);
+                  }
+                }}
+                className="px-8 py-3 rounded-2xl bg-gradient-to-r from-orange-500 to-red-500 text-white shadow-lg hover:scale-105 transition"
+              >
+                {loading ? "Adding..." : "Add Item"}
+              </button>
+
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+    )}
+
+    {/* Menu List */}
+
+    <div className="max-w-7xl mx-auto">
+
+      <div className="bg-white rounded-3xl shadow-xl p-6">
+
+        <MenuItem
+          items={menuItem}
+          onItemDeleted={() => {
+            if (restaurants?._id) {
+              fetchMenuItems(restaurants._id);
+            }
+          }}
+          isSeller={true}
+        />
+
+      </div>
+
+    </div>
+
+  </div>
+);
+  
 };
 
 export default AddItem;

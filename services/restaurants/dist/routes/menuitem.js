@@ -4,7 +4,7 @@ import { addItem, deleteItem, getAllItem, toggleItem } from "../controller/MenuI
 import uploadFile from "../middlewaves/multer.js";
 const router = express.Router();
 router.post('/new', isAuth, isSeller, uploadFile, addItem);
-router.get('/add/:id', isAuth, isSeller, getAllItem);
-router.delete("/:id", isAuth, isSeller, deleteItem);
-router.delete("/status/:id", isAuth, isSeller, toggleItem);
+router.get('/all/:id', isAuth, isSeller, getAllItem);
+router.delete("/:itemId", isAuth, isSeller, deleteItem);
+router.put("/status/:itemId", isAuth, isSeller, toggleItem);
 export default router;

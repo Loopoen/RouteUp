@@ -97,7 +97,7 @@ const RestaurantProfile = ({
             </h1>
 
             <p className="text-white/90 mt-3 text-lg flex items-center gap-2">
-              📍 {restaurant.address}
+              📍 {restaurant.autoLocation.formattedAddress}
             </p>
 
             <p className="text-lg text-gray-200 mt-3 max-w-xl">

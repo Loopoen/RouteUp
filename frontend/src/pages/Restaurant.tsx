@@ -1,5 +1,5 @@
 import axios from "axios";
-import type { IRestaurant } from "../type";
+import type { IMenuItem, IRestaurant } from "../type";
 import { restaurantService } from "../main";
 import { useEffect, useState } from "react";
 import AddRestaurant from "../components/AddRestaurant";
@@ -7,6 +7,7 @@ import { Toaster } from "react-hot-toast";
 import RestaurantProfile from "../components/RestaurantProfile";
 import MenuItem from "../components/MenuItem";
 import AddItem from "../components/AddItem";
+
 
 type SellerTab = "menu" | "add-item" | "sales";
 
@@ -16,6 +17,15 @@ const Restaurant = () => {
   const [loading, setLoading] = useState(true);
 
   const [tab, setTab] = useState<SellerTab>("menu");
+    const [menuItem, setMenuItem] = useState<IMenuItem[]>([])
+
+  useEffect(()=>{
+    if(restaurants?._id){
+      fetchMenuItems(restaurants._id)
+    }
+  }, [restaurants])
+
+
 
   const fetchMyRestaurant = async () => {
     try {
@@ -30,6 +40,7 @@ const Restaurant = () => {
       );
 
       setRestaurants(data.restaurant || null);
+      console.log("hehehe",data)
     } catch (err) {
       console.log(err);
     } finally {
@@ -54,6 +65,28 @@ const Restaurant = () => {
   if (!restaurants) {
     return <AddRestaurant fetchMyRestaurant={fetchMyRestaurant} />;
   }
+
+
+  const fetchMenuItems = async(restaurantId:string)=>{
+    try{
+      const {data} = await axios.get(`${restaurantService}/api/item/all/${restaurants._id}`,{
+        headers:{
+          Authorization: `Bearer ${localStorage.getItem("token")}`
+        }
+      })
+
+      console.log("data", data)
+
+      setMenuItem(data)
+    }
+
+
+    catch(err){
+      console.log(err)
+    }
+  }
+
+
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-orange-50 via-white to-orange-100">
@@ -137,13 +170,13 @@ const Restaurant = () => {
               onUpdate={setRestaurants}
             />
 
-            <MenuItem/>
+            <MenuItem items={menuItem} onItemDeleted={()=>fetchMenuItems(restaurants._id)} isSeller={true}/>
            
            </>
           )}
 
           {tab === "add-item" && (
-            <AddItem  onItemAdd={() => {}}/>
+            <AddItem  onItemAdd={() =>fetchMenuItems(restaurants._id)}/>
           )}
 
           {tab === "sales" && (
