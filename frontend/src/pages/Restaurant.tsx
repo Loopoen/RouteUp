@@ -7,17 +7,34 @@ import { Toaster } from "react-hot-toast";
 import RestaurantProfile from "../components/RestaurantProfile";
 import MenuItem from "../components/MenuItem";
 import AddItem from "../components/AddItem";
+import { FaRightFromBracket } from "react-icons/fa6";
 
 
 type SellerTab = "menu" | "add-item" | "sales";
 
 const Restaurant = () => {
+ 
   const [restaurants, setRestaurants] = useState<IRestaurant | null>(null);
 
   const [loading, setLoading] = useState(true);
 
   const [tab, setTab] = useState<SellerTab>("menu");
     const [menuItem, setMenuItem] = useState<IMenuItem[]>([])
+
+   const handleLogout = () => {
+  const confirmLogout = window.confirm(
+    "Bạn có chắc chắn muốn đăng xuất?"
+  );
+
+  if (!confirmLogout) return;
+
+  
+  localStorage.removeItem("token");
+  localStorage.removeItem("user");
+
+  
+  window.location.href = "/";
+};
 
   useEffect(()=>{
     if(restaurants?._id){
@@ -119,7 +136,29 @@ const Restaurant = () => {
               className="w-16 h-16 rounded-full object-cover border-4 border-orange-200 shadow-lg"
             />
           </div>
+          <button
+    onClick={handleLogout}
+    className="
+      flex
+      items-center
+      gap-2
+      bg-red-500
+      hover:bg-red-600
+      text-white
+      px-5
+      py-3
+      rounded-xl
+      shadow-lg
+      transition
+      hover:scale-105
+    "
+  >
+    <FaRightFromBracket />
+    Logout
+  </button>
         </div>
+
+  
       </div>
 
       {/* Main */}

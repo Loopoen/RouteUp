@@ -28,7 +28,9 @@ export const addRestaurant = TryCatch(async (req: AuthenticatedRequest, res) => 
         })
     }
 
-    const { name, description, latitude, longtitude, formattedAddress, phone } = req.body
+    const { name, description, latitude, longtitude, formatedAddress, phone } = req.body
+
+    console.log("formatedAdress", formatedAddress)
 
     if (!name || !latitude || !longtitude) {
         return res.status(400).json({
@@ -64,7 +66,7 @@ export const addRestaurant = TryCatch(async (req: AuthenticatedRequest, res) => 
         autoLocation: {
             type: "Point",
             coordinates: [Number(longtitude), Number(latitude)],
-            formattedAddress
+            formatedAddress
         },
         isVerified:false
     })
@@ -191,7 +193,9 @@ export const updateRestaurant  = TryCatch(
 
 export const getNearByRestaurant = TryCatch(
     async(req, res)=>{
-        const {latitude,longitude, radius= 5000, search =""} =req.query
+        const {latitude,longitude, radius= 50000000000, search =""} =req.query
+        console.log("la", latitude)
+        console.log("lo", longitude)
 
         if(!latitude || !longitude){
             return res.status(400).json({
@@ -206,7 +210,7 @@ export const getNearByRestaurant = TryCatch(
         }
 
         if(search && typeof search ==="string"){
-            query.name = {$regex:search, $option:"i"}
+            query.name = {$regex:search, $options:"i"}
         }
 
         const restaurant = await Retaurants.aggregate([
@@ -244,5 +248,13 @@ export const getNearByRestaurant = TryCatch(
             count:restaurant.length,
             restaurant
         })
+    }
+)
+
+export const fetchSingleRestaurant = TryCatch(
+    async(req, res)=>{
+        const restaurant = await Retaurants.findById(req.params.id)
+
+        res.json(restaurant)
     }
 )

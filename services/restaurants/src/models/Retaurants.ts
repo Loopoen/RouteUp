@@ -46,7 +46,7 @@ const schema = new Schema <IRestaurant>(  {
             type:[Number, Number],
             required:true
         },
-        formattedAddress:{
+        formatedAddress:{
             type:String,
         },
         
@@ -58,8 +58,8 @@ const schema = new Schema <IRestaurant>(  {
     ,
 
     isVerified: {
-    type: Boolean,     // Kiểu dữ liệu phải là viết hoa chữ B: Boolean
-    default: false     // Giá trị mặc định khi tạo mới là false
+    type: Boolean,     
+    default: false     
 },
   
 

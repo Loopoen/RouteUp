@@ -164,7 +164,7 @@ const RestaurantProfile = ({
               </label>
 
               <div className="mt-3 flex items-center gap-2 text-lg text-gray-700 bg-gray-50 rounded-2xl p-4">
-                📍 {restaurant.address}
+                📍 {restaurant.autoLocation.formatedAddress}
               </div>
             </div>
 

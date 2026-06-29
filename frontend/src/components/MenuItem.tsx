@@ -11,6 +11,7 @@ import {
 } from "react-icons/fa6";
 import { restaurantService } from "../main";
 import toast from "react-hot-toast";
+import { useState } from "react";
 
 
 interface MenuItemProps {
@@ -25,19 +26,30 @@ const MenuItem = ({
   isSeller,
 }: MenuItemProps) => {
 
-  const handleDelete = async(itemId:string)=>{
+  const [search, setSearch] = useState("");
+
+  const filteredItems = items.filter((item) => {
+  const keyword = search.toLowerCase();
+
+  return (
+    item.name.toLowerCase().includes(keyword) ||
+    item.description.toLowerCase().includes(keyword)
+  );
+});
+
+  const handleDelete = async (itemId: string) => {
     console.log("click delted")
     const confirm = window.confirm("chat cha k")
 
     console.log(window.confirm.toString())
-    if(!confirm) {
+    if (!confirm) {
       return;
     }
 
-    try{
-      await axios.delete(`${restaurantService}/api/item/${itemId}`,{
-        headers:{
-          Authorization:`Bearer ${localStorage.getItem("token")}`
+    try {
+      await axios.delete(`${restaurantService}/api/item/${itemId}`, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`
         }
       })
 
@@ -45,26 +57,26 @@ const MenuItem = ({
 
       onItemDeleted()
     }
-    catch(error){
+    catch (error) {
       toast.error("xoa khong thanh cong")
       console.log(error)
-      
+
     }
   }
 
-  const tongleStatus = async(itemId:string)=>{
+  const tongleStatus = async (itemId: string) => {
     console.log("click delted")
     const confirm = window.confirm("chat chan k")
 
     console.log(window.confirm.toString())
-    if(!confirm) {
+    if (!confirm) {
       return;
     }
 
-    try{
-      const {data} = await axios.put(`${restaurantService}/api/item/status/${itemId}`,{},{
-        headers:{
-          Authorization:`Bearer ${localStorage.getItem("token")}`
+    try {
+      const { data } = await axios.put(`${restaurantService}/api/item/status/${itemId}`, {}, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`
         }
       })
 
@@ -72,10 +84,10 @@ const MenuItem = ({
 
       onItemDeleted()
     }
-    catch(error){
+    catch (error) {
       toast.error("xoa khong thanh cong")
       console.log(error)
-      
+
     }
   }
   return (
@@ -88,6 +100,50 @@ const MenuItem = ({
 
       <div className="flex justify-between items-center mb-10">
 
+        {/* Search */}
+
+<div className="mb-8">
+  <div className="relative">
+    <input
+      type="text"
+      placeholder="🔍 Search menu..."
+      value={search}
+      onChange={(e) => setSearch(e.target.value)}
+      className="
+        w-full
+        rounded-2xl
+        border
+        border-gray-200
+        bg-white
+        px-5
+        py-4
+        pl-12
+        text-gray-700
+        shadow-sm
+        focus:outline-none
+        focus:ring-2
+        focus:ring-orange-400
+        focus:border-orange-400
+      "
+    />
+
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400"
+      fill="none"
+      viewBox="0 0 24 24"
+      stroke="currentColor"
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth={2}
+        d="M21 21l-4.35-4.35M11 18a7 7 0 100-14 7 7 0 000 14z"
+      />
+    </svg>
+  </div>
+</div>
+
         <div>
           <h2 className="text-4xl font-extrabold text-gray-800">
             🍽 Our Menu
@@ -99,12 +155,12 @@ const MenuItem = ({
         </div>
 
         <div className="bg-orange-500 text-white px-5 py-2 rounded-full font-bold shadow">
-          {items.length} Items
+          {filteredItems.length} Items
         </div>
 
       </div>
 
-      {items.length === 0 ? (
+      {filteredItems.length === 0 ? (
         <div className="bg-white rounded-3xl shadow-lg p-16 text-center">
 
           <div className="text-7xl mb-4">
@@ -123,7 +179,7 @@ const MenuItem = ({
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8">
 
-          {items.map((item) => (
+          {filteredItems.map((item) => (
 
             <div
               key={item._id}
@@ -188,11 +244,10 @@ const MenuItem = ({
                 {/* Status */}
 
                 <span
-                  className={`absolute top-4 right-4 px-4 py-2 rounded-full text-xs font-bold shadow ${
-                    item.isAvailable
+                  className={`absolute top-4 right-4 px-4 py-2 rounded-full text-xs font-bold shadow ${item.isAvailable
                       ? "bg-green-500 text-white"
                       : "bg-red-500 text-white"
-                  }`}
+                    }`}
                 >
                   {item.isAvailable
                     ? "Available"
@@ -279,21 +334,19 @@ const MenuItem = ({
 
                   <div className="flex gap-4 mt-8">
 
-                   <button
-  onClick={() => tongleStatus(item._id)}
-  className={`relative w-16 h-9 rounded-full transition-all duration-300 ${
-    item.isAvailable ? "bg-green-500" : "bg-gray-300"
-  }`}
->
-  <span
-    className={`absolute top-1 w-7 h-7 bg-white rounded-full shadow-md transition-all duration-300 ${
-      item.isAvailable ? "left-8" : "left-1"
-    }`}
-  />
-</button>
+                    <button
+                      onClick={() => tongleStatus(item._id)}
+                      className={`relative w-16 h-9 rounded-full transition-all duration-300 ${item.isAvailable ? "bg-green-500" : "bg-gray-300"
+                        }`}
+                    >
+                      <span
+                        className={`absolute top-1 w-7 h-7 bg-white rounded-full shadow-md transition-all duration-300 ${item.isAvailable ? "left-8" : "left-1"
+                          }`}
+                      />
+                    </button>
 
                     <button
-                      onClick={()=>handleDelete(item._id)}
+                      onClick={() => handleDelete(item._id)}
                       className="
                         flex-1
                         cursor-pointer

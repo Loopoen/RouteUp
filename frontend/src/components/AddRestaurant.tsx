@@ -21,6 +21,8 @@ const AddRestaurant = ({fetchMyRestaurant}:props) => {
 
   const { loadingLocation, location } = useAppData();
 
+  console.log(location)
+
   const handleSubmit = async () => {
     if (!name || !image || !location) {
       toast.error("Vui lòng nhập đầy đủ thông tin");
@@ -34,6 +36,7 @@ const AddRestaurant = ({fetchMyRestaurant}:props) => {
     formData.append("latitude", String(location.latitude));
     formData.append("longtitude", String(location.longitude));
     formData.append("formatedAddress", location.formattedAddress);
+    console.log("AddressFormated", location.formattedAddress)
     formData.append("file", image);
     formData.append("phone", phone);
 
@@ -178,16 +181,12 @@ const AddRestaurant = ({fetchMyRestaurant}:props) => {
             </label>
 
             <div className="bg-orange-50 border border-orange-200 rounded-xl p-4">
-              {loadingLocation ? (
-                <p className="text-gray-500">
-                  Đang lấy vị trí...
-                </p>
-              ) : (
+             
                 <p className="text-gray-700">
                   {location?.formattedAddress ||
                     "Không lấy được vị trí"}
                 </p>
-              )}
+              
             </div>
           </div>
 
