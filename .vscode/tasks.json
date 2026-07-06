@@ -1,0 +1,60 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "frontend",
+      "type": "shell",
+      "command": "cd frontend && npm run dev",
+      "isBackground": true,
+      "presentation": {
+        "panel": "dedicated",
+        "group": "routeup"
+      }
+    },
+    {
+      "label": "auth",
+      "type": "shell",
+      "command": "cd services/auth && npm run dev",
+      "isBackground": true,
+      "presentation": {
+        "panel": "dedicated",
+        "group": "routeup"
+      }
+    },
+    {
+      "label": "restaurants",
+      "type": "shell",
+      "command": "cd services/restaurants && npm run dev",
+      "isBackground": true,
+      "presentation": {
+        "panel": "dedicated",
+        "group": "routeup"
+      }
+    },
+    {
+      "label": "utils",
+      "type": "shell",
+      "command": "cd services/utils && npm run dev",
+      "isBackground": true,
+      "presentation": {
+        "panel": "dedicated",
+        "group": "routeup"
+      }
+    },
+    {
+      "label": "run-all",
+      "dependsOn": [
+        "frontend",
+        "auth",
+        "restaurants",
+        "utils"
+      ],
+      "dependsOrder": "parallel",
+      "problemMatcher": [],
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      }
+    }
+  ]
+}

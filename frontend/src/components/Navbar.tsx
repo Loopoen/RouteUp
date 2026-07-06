@@ -5,7 +5,8 @@ import { CgShoppingCart } from "react-icons/cg";
 import { BiMapPin, BiSearch } from "react-icons/bi";
 
 const Navbar = () => {
-  const { isAuth, city, loadingLocation,  } = useAppData();
+  const { isAuth, city, loadingLocation, subTotal, quantity  } = useAppData();
+  console.log("qu" ,quantity)
 
   const location = useLocation();
   const isHomePage = location.pathname === "/";
@@ -145,7 +146,7 @@ const Navbar = () => {
                     text-white
                   "
                 >
-                  0
+                  {quantity}
                 </span>
 
                 <span

@@ -1,3 +1,4 @@
+import { fetchMyCart } from '../../services/restaurants/src/controller/cart';
 
 export interface User{
     _id:string, 
@@ -24,6 +25,10 @@ export interface AppContextType{
     location: LocationData | null,
     loadingLocation:boolean,
     city:string
+    cart:ICart[]
+    fetchCart:()=> Promise <void>;
+    subTotal:number,
+    quantity:number
     
 }
 
@@ -60,4 +65,13 @@ export interface IMenuItem {
     isAvailable:boolean,
     createdAt:Date,
     updatedAt:Date
+}
+
+export interface ICart {
+  userId: string ;
+  restaurantId: string | IRestaurant;
+  itemId: string | IMenuItem;
+  quantity: number;
+  createdAt: Date;
+  updatedAt: Date;
 }

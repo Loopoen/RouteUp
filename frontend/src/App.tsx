@@ -10,6 +10,8 @@ import Navbar from "./components/Navbar"
 import Account from "./pages/Account"
 import { useAppData } from "./context/AppContext"
 import Restaurant from "./pages/Restaurant"
+import path from 'path';
+import RestaurantPage from "./pages/RestaurantPage"
 
 function App() {
  
@@ -32,6 +34,7 @@ function App() {
                      <Route path="/" element={<Home/>}/>
                      <Route path="/select-role" element={<SelectRole/>}/>
                      <Route path="/account" element={<Account/>} />
+                     <Route path="/restaurant/:id" element={<RestaurantPage/>}  />
             </Route>
      
           
