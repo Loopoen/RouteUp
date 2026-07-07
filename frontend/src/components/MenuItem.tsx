@@ -8,10 +8,12 @@ import {
   FaCircleCheck,
   FaCircleXmark,
   FaMagnifyingGlass,
+  FaCartShopping,
 } from "react-icons/fa6";
 import { restaurantService } from "../main";
 import toast from "react-hot-toast";
 import { useState } from "react";
+import { useAppData } from "../context/AppContext";
 
 interface MenuItemProps {
   items: IMenuItem[];
@@ -22,6 +24,7 @@ interface MenuItemProps {
 const MenuItem = ({ items, onItemDeleted, isSeller }: MenuItemProps) => {
   const [search, setSearch] = useState("");
   const [favorites, setFavorites] = useState<Record<string, boolean>>({});
+  const [loadingItemId, setLoadingItemId] = useState<string | null>(null);
 
   const filteredItems = items.filter((item) => {
     const keyword = search.toLowerCase();
@@ -75,8 +78,33 @@ const MenuItem = ({ items, onItemDeleted, isSeller }: MenuItemProps) => {
     }
   };
 
+  const { fetchCart } = useAppData();
+
+  const addCart = async (restaurantId: string, itemId: string) => {
+    try {
+      setLoadingItemId(itemId);
+      const { data } = await axios.post(
+        `${restaurantService}/api/cart/add`,
+        { restaurantId, itemId },
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
+      );
+
+      toast.success(data.message);
+      fetchCart();
+    } catch (err: any) {
+      console.log(err);
+      toast.error(err.response?.data?.message || "Thêm vào giỏ thất bại");
+    } finally {
+      setLoadingItemId(null);
+    }
+  };
+
   return (
-    <div 
+    <div
       className="mt-10 bg-[#FBF4E8] rounded-3xl p-8"
       style={{ fontFamily: "'Be Vietnam Pro', sans-serif" }}
     >
@@ -142,7 +170,7 @@ const MenuItem = ({ items, onItemDeleted, isSeller }: MenuItemProps) => {
               key={item._id}
               className="group relative bg-white rounded-2xl border border-[#EFE7D4] shadow-lg hover:shadow-2xl hover:-translate-y-2 transition-all duration-500"
             >
-              {/* Image (own overflow-hidden so scale doesn't leak, but doesn't clip the price tag) */}
+              {/* Image */}
               <div className="relative overflow-hidden rounded-t-2xl">
                 <img
                   src={item.image}
@@ -179,7 +207,7 @@ const MenuItem = ({ items, onItemDeleted, isSeller }: MenuItemProps) => {
                 </span>
               </div>
 
-              {/* Price tag — sits on the seam between image and body, no longer clipped */}
+              {/* Price tag */}
               <div
                 className="absolute right-5 top-[12.5rem] bg-[#E8A93A] text-[#221F1B] px-4 py-2 rounded-lg font-bold shadow-lg rotate-[-3deg] border-2 border-[#221F1B] z-10"
                 style={{ fontFamily: "'Space Mono', monospace" }}
@@ -225,6 +253,31 @@ const MenuItem = ({ items, onItemDeleted, isSeller }: MenuItemProps) => {
                     </span>
                   )}
                 </div>
+
+                {/* Buyer action: Add to cart */}
+                {!isSeller && (
+                  <button
+                    type="button"
+                    disabled={!item.isAvailable || loadingItemId === item._id}
+                    onClick={() => addCart(item.restaurantId, item._id)}
+                    className={`mt-6 w-full py-3 rounded-xl font-semibold flex justify-center items-center gap-2 transition ${
+                      !item.isAvailable
+                        ? "bg-[#D8D1C4] text-[#8C8479] cursor-not-allowed"
+                        : loadingItemId === item._id
+                        ? "bg-[#221F1B]/70 text-white cursor-wait"
+                        : "bg-[#221F1B] text-white hover:bg-[#3F6B4A] cursor-pointer"
+                    }`}
+                  >
+                    {loadingItemId === item._id ? (
+                      "Đang thêm..."
+                    ) : (
+                      <>
+                        <FaCartShopping />
+                        {item.isAvailable ? "Thêm vào giỏ" : "Hết hàng"}
+                      </>
+                    )}
+                  </button>
+                )}
 
                 {/* Seller actions, separated by dashed "tear line" */}
                 {isSeller && (

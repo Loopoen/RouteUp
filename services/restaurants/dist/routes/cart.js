@@ -1,7 +1,10 @@
 import express from "express";
 import { isAuth } from "../middlewaves/isAuth.js";
-import { addToCart, fetchMyCart } from "../controller/cart.js";
+import { addToCart, clearCart, deletedCartItem, fetchMyCart, incremmentCartItem } from "../controller/cart.js";
 const router = express.Router();
 router.post("/add", isAuth, addToCart);
 router.get("/all", isAuth, fetchMyCart);
+router.put("/inc", isAuth, incremmentCartItem);
+router.put("/dec", isAuth, deletedCartItem);
+router.delete("/clear", isAuth, clearCart);
 export default router;

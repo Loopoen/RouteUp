@@ -12,6 +12,7 @@ import { useAppData } from "./context/AppContext"
 import Restaurant from "./pages/Restaurant"
 import path from 'path';
 import RestaurantPage from "./pages/RestaurantPage"
+import CartPage from "./pages/CartPage"
 
 function App() {
  
@@ -35,6 +36,7 @@ function App() {
                      <Route path="/select-role" element={<SelectRole/>}/>
                      <Route path="/account" element={<Account/>} />
                      <Route path="/restaurant/:id" element={<RestaurantPage/>}  />
+                     <Route path="/cart" element={<CartPage/>}/>
             </Route>
      
           
