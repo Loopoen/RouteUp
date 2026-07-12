@@ -13,6 +13,9 @@ import Restaurant from "./pages/Restaurant"
 import path from 'path';
 import RestaurantPage from "./pages/RestaurantPage"
 import CartPage from "./pages/CartPage"
+import Address from "./pages/Address"
+import AddAddressPage from "./pages/Address"
+import CheckOut from "./pages/CheckOut"
 
 function App() {
  
@@ -37,6 +40,8 @@ function App() {
                      <Route path="/account" element={<Account/>} />
                      <Route path="/restaurant/:id" element={<RestaurantPage/>}  />
                      <Route path="/cart" element={<CartPage/>}/>
+                     <Route path="/addresses" element={<AddAddressPage/>} />
+                     <Route path="/checkout" element={<CheckOut/>}/>
             </Route>
      
           
