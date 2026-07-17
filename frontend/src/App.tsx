@@ -16,6 +16,8 @@ import CartPage from "./pages/CartPage"
 import Address from "./pages/Address"
 import AddAddressPage from "./pages/Address"
 import CheckOut from "./pages/CheckOut"
+import PaymentSuccess from "./pages/PaymentSuccess"
+import OrderSuccess from "./pages/OrderSuccess"
 
 function App() {
  
@@ -34,8 +36,13 @@ function App() {
                   <Route path="/login" element={<Login/>} />
             </Route>
 
+
+                 <Route path="/ordersuccess" element={<OrderSuccess/>} /> 
             <Route element={<ProtectedRoute/>}>
                      <Route path="/" element={<Home/>}/>
+                     <Route path="/paymentsuccess/:paymentId" element={<PaymentSuccess/>} />
+                
+                   
                      <Route path="/select-role" element={<SelectRole/>}/>
                      <Route path="/account" element={<Account/>} />
                      <Route path="/restaurant/:id" element={<RestaurantPage/>}  />

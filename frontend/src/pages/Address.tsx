@@ -32,7 +32,7 @@ interface Address {
 
 
 const LocationPicker = ({
-  setLocation,
+  setLocation,  
 }: {
   setLocation: (lat: number, lng: number) => void;
 }) => {
@@ -60,7 +60,7 @@ const LocateMeButton = ({
     }
 
     navigator.geolocation.getCurrentPosition(
-      (pos) => {
+      (pos) => {    
         const { latitude, longitude } = pos.coords;
         map.flyTo([latitude, longitude], 16, { animate: true });
         onLocate(latitude, longitude);

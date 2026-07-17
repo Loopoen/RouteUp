@@ -12,7 +12,7 @@ export const createOrder  = TryCatch(
         const user = req.user
 
         if(!user){
-            return res.status(401).json({
+            return res.status(401).json({ // Authorization
                 message:"dang nhap dum"
             })
         }
@@ -37,7 +37,7 @@ export const createOrder  = TryCatch(
             })
         }
 
-        const cartItem = await Cart.find({userid:user._id}).populate<{itemId:IMenuItem}>("itemId").populate<{restaurantId:IRestaurant}>("restaurantId")
+        const cartItem = await Cart.find({userId:user._id}).populate<{itemId:IMenuItem}>("itemId").populate<{restaurantId:IRestaurant}>("restaurantId")
 
         if(cartItem.length === 0){
             return res.status(400).json({
@@ -107,6 +107,7 @@ export const createOrder  = TryCatch(
             restaurantId: restaurantId.toString(),
             restaurantName:restaurant.name,
             riderId:null,
+            distance,
             riderAmount,
             items:orderItem,
             subTotal,
@@ -129,7 +130,7 @@ export const createOrder  = TryCatch(
 
         res.json({
             message:"order thanh cong",
-            ownerId:order._id.toString(),
+            orderId:order._id.toString(),
             amount:totalAmount
         })
 

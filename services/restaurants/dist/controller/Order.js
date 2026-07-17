@@ -25,7 +25,7 @@ export const createOrder = TryCatch(async (req, res) => {
             message: "khong tim thay dia chi"
         });
     }
-    const cartItem = await Cart.find({ userid: user._id }).populate("itemId").populate("restaurantId");
+    const cartItem = await Cart.find({ userId: user._id }).populate("itemId").populate("restaurantId");
     if (cartItem.length === 0) {
         return res.status(400).json({
             message: "chua co san pham de order"
@@ -75,6 +75,7 @@ export const createOrder = TryCatch(async (req, res) => {
         restaurantId: restaurantId.toString(),
         restaurantName: restaurant.name,
         riderId: null,
+        distance,
         riderAmount,
         items: orderItem,
         subTotal,
@@ -94,7 +95,7 @@ export const createOrder = TryCatch(async (req, res) => {
     await Cart.deleteMany({ userId: user._id });
     res.json({
         message: "order thanh cong",
-        ownerId: order._id.toString(),
+        orderId: order._id.toString(),
         amount: totalAmount
     });
 });
