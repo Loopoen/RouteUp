@@ -51,6 +51,8 @@ const CheckOut = () => {
           }
         );
 
+      
+
         setAddresses(data || []);
       } catch (err) {
         console.log(err);
@@ -119,6 +121,8 @@ console.log("order",order);
           orderId: order.orderId,
         }
       );
+
+        console.log("datacheckout", data)
 
       if (data.url) {
         window.location.href = data.url;

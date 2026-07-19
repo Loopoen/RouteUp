@@ -24,7 +24,7 @@ const Navbar = () => {
       } else {
         setSearchParams({});
       }
-    }, 600);
+    },600);
 
     return () => clearTimeout(timer);
   }, [search, setSearchParams]);

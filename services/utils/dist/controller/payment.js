@@ -34,6 +34,7 @@ export const payWithStripe = async (req, res) => {
             success_url: `${process.env.FRONTEND_URL}/ordersuccess?session_id={CHECKOUT_SESSION_ID}`,
             cancel_url: `${process.env.FRONTEND_URL}/checkout`
         });
+        console.log("session_url", session.url);
         res.json({
             url: session.url,
         });

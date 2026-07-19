@@ -51,6 +51,8 @@
 
             })
 
+            console.log("session_url",session.url)
+
             res.json({
                 url:session.url,
             })
