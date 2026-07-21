@@ -8,6 +8,7 @@ import RestaurantProfile from "../components/RestaurantProfile";
 import MenuItem from "../components/MenuItem";
 import AddItem from "../components/AddItem";
 import { FaRightFromBracket } from "react-icons/fa6";
+import RestaurantOrder from "./RestaurantOrder";
 
 
 type SellerTab = "menu" | "add-item" | "sales";
@@ -209,6 +210,9 @@ const Restaurant = () => {
               onUpdate={setRestaurants}
             />
 
+
+               <RestaurantOrder restaurantId={restaurants._id}/>
+            
             <MenuItem items={menuItem} onItemDeleted={()=>fetchMenuItems(restaurants._id)} isSeller={true}/>
            
            </>

@@ -23,6 +23,7 @@ const initSocket = (server) => {
             if (!decode || !decode.user) {
                 return next(new Error("chua co auth khi giai ma"));
             }
+            // console.log("decode",decode);
             socket.data.user = decode.user;
             next();
         }

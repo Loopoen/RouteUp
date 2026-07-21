@@ -41,13 +41,25 @@
         "group": "routeup"
       }
     },
+
+       {
+      "label": "realtime",
+      "type": "shell",
+      "command": "cd services/realtime && npm run dev",
+      "isBackground": true,
+      "presentation": {
+        "panel": "dedicated",
+        "group": "routeup"
+      }
+    },
     {
       "label": "run-all",
       "dependsOn": [
         "frontend",
         "auth",
         "restaurants",
-        "utils"
+        "utils",
+        "realtime"
       ],
       "dependsOrder": "parallel",
       "problemMatcher": [],

@@ -19,6 +19,7 @@
     export const payWithStripe = async(req:Request, res:Response)=>{
         try{
             const {orderId} = req.body
+            
 
             const {data} = await axios.get(`${process.env.RESTAURANT_SERVICE}/api/order/payment/${orderId}`,{
                 headers:{

@@ -16,6 +16,6 @@ app.use(express_1.default.json());
 app.use("/api/v1/internal", internal_1.default);
 const server = http_1.default.createServer(app);
 (0, socket_1.initSocket)(server);
-app.listen(process.env.PORT, () => {
+server.listen(process.env.PORT, () => {
     console.log(`realtim run ${process.env.PORT}`);
 });

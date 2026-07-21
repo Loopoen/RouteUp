@@ -88,12 +88,11 @@ const orderSchema = new Schema({
         enum: [
             "placed",
             "accepted",
-            "preaparing",
+            "preparing",
             "ready_for_rider",
             "rider_assigned",
             "picked_up",
             "delivered",
-            "cancelled",
         ],
         default: "placed",
         required: true,

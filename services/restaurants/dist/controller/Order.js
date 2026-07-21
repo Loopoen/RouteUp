@@ -1,3 +1,4 @@
+import axios from "axios";
 import TryCatch from "../middlewaves/TryCatch.js";
 import Address from "../models/Address.js";
 import Cart from "../models/Cart.js";
@@ -116,9 +117,126 @@ export const fetchOrderForPayment = TryCatch(async (req, res) => {
             message: "order san sang de giao dich"
         });
     }
+    order.paymentStatus = "paid";
+    order.save();
     res.json({
         orderId: order._id,
         amount: order.totalAmount,
         currency: "VND"
     });
+});
+export const fetchRestaurantOrder = TryCatch(async (req, res) => {
+    const user = req.user;
+    const { restaurantId } = req.params;
+    if (!user) {
+        return res.status(401).json({
+            message: "dang nhap dum"
+        });
+    }
+    if (!restaurantId) {
+        return res.status(400).json({
+            message: "chua co id restaurant"
+        });
+    }
+    const limit = req.query.limit ? Number(req.query.limit) : 0;
+    const orders = await Order.find({
+        restaurantId,
+        paymentStatus: "paid",
+    }).sort({ createdAt: -1 })
+        .limit(limit);
+    return res.json({
+        success: true,
+        count: orders.length,
+        orders
+    });
+});
+const ALLOWED_STATUSES = ["accepted", "preparing", "ready_for_rider"];
+export const updatedOrderStatus = TryCatch(async (req, res) => {
+    const user = req.user;
+    const { orderId } = req.params;
+    const { status } = req.body;
+    console.log("Restaurant INTERNAL_SERVICE:", process.env.INTERNAL_SERVICE);
+    console.log("Calling realtime:", process.env.REALTIME_SERVICE);
+    if (!user) {
+        return res.status(401).json({
+            message: "dang nhap di"
+        });
+    }
+    if (!ALLOWED_STATUSES.includes(status)) {
+        return res.status(400).json({
+            message: "chua co status"
+        });
+    }
+    const order = await Order.findById(orderId);
+    if (!order) {
+        return res.status(404).json({
+            message: "khong tim thay order"
+        });
+    }
+    if (order.paymentStatus !== "paid") {
+        return res.status(404).json({
+            message: "order chua hoan thanh"
+        });
+    }
+    const restaurant = await Retaurants.findById(order.restaurantId);
+    if (!restaurant) {
+        return res.status(404).json({
+            message: "restaurant khong tim thay"
+        });
+    }
+    if (restaurant.ownerId !== user._id.toString()) {
+        return res.status(401).json({
+            message: "ban chua cho phep quyen sua order nay"
+        });
+    }
+    order.status = status;
+    await order.save();
+    await axios.post(`${process.env.REALTIME_SERVICE}/api/v1/internal/emit`, {
+        event: "order:update",
+        room: `user:${order.userId}`,
+        payload: {
+            orderId: order._id,
+            status: order.status,
+        }
+    }, {
+        headers: {
+            "x-internal-key": process.env.INTERNAL_SERVICE
+        }
+    });
+    // rideer
+    res.json({
+        message: "order update status thanh cong ",
+        order
+    });
+});
+export const getMyOrders = TryCatch(async (req, res) => {
+    if (!req.user) {
+        return res.status(401).json({
+            message: "dang nhap di"
+        });
+    }
+    const order = await Order.find({
+        userId: req.user._id.toString(),
+        paymentStatus: "paid",
+    }).sort({ createdAt: -1 });
+    res.json({ order });
+});
+export const fetchSingleOrder = TryCatch(async (req, res) => {
+    if (!req.user) {
+        return res.status(401).json({
+            message: "dang nhap di"
+        });
+    }
+    const order = await Order.findById(req.params.id);
+    if (!order) {
+        return res.status(404).json({
+            message: "khong tim thay order"
+        });
+    }
+    if (order.userId !== req.user._id.toString()) {
+        return res.status(401).json({
+            message: "ban khong co quyen xem order nay"
+        });
+    }
+    res.json(order);
 });
