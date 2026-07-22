@@ -25,6 +25,7 @@ const initSocket = (server) => {
             }
             // console.log("decode",decode);
             socket.data.user = decode.user;
+            console.log(decode.user);
             next();
         }
         catch (err) {
@@ -40,6 +41,7 @@ const initSocket = (server) => {
         }
         const userId = user._id;
         socket.join(`user:${userId}`);
+        console.log(socket.data.user);
         if (user.restaurantId) {
             socket.join(`restaurant:${user.restaurantId}`);
         }

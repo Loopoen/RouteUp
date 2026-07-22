@@ -217,13 +217,10 @@ const ALLOWED_STATUSES = ["accepted", "preparing", "ready_for_rider"] as const
 export const updatedOrderStatus = TryCatch(
     async(req:AuthenticatedRequest, res)=>{
         const user = req.user
-
         const {orderId} = req.params
-
         const {status} = req.body
-
         console.log("Restaurant INTERNAL_SERVICE:", process.env.INTERNAL_SERVICE)
-console.log("Calling realtime:", process.env.REALTIME_SERVICE)
+        console.log("Calling realtime:", process.env.REALTIME_SERVICE)
 
         if(!user){
             return res.status(401).json({

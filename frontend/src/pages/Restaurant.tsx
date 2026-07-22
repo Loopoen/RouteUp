@@ -58,6 +58,10 @@ const Restaurant = () => {
       );
 
       setRestaurants(data.restaurant || null);
+
+        if (data.token) {
+        localStorage.setItem("token", data.token);
+      }
       console.log("hehehe",data)
     } catch (err) {
       console.log(err);

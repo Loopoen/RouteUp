@@ -5,7 +5,7 @@ dotenv.config()
 import { getIO } from '../socket'
 const router = express.Router()
 
-router.post("/emit", (req, res)=>{
+router.post("/emit", async(req, res)=>{
 
     console.log("HEADER:", req.headers["x-internal-key"])
 console.log("ENV:", process.env.INTERNAL_SERVICE)

@@ -5,7 +5,7 @@ import axios from "axios";
 import { restaurantService } from "../main";
 import RestaurantProfile from "../components/RestaurantProfile";
 import MenuItem from "../components/MenuItem";
-import RestaurantOrder from "./RestaurantOrder";
+
 
 const RestaurantPage = () => {
   const { id } = useParams();

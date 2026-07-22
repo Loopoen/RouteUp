@@ -69,7 +69,13 @@ export const addRestaurant = TryCatch(async (req: AuthenticatedRequest, res) => 
             formatedAddress
         },
         isVerified:false
+
+        
     })
+
+    
+    
+
 
     return res.status(201).json({
         message: "tao thanh cong mon phai",
@@ -93,7 +99,7 @@ export const fetchRestaurant = TryCatch(
         if (!req.user.restaurantId) {
             const token = jwt.sign(
                 {
-                    users: {
+                    user: {
                         ...req.user,
                         restaurantId: restaurant._id,
                     }
@@ -193,7 +199,7 @@ export const updateRestaurant  = TryCatch(
 
 export const getNearByRestaurant = TryCatch(
     async(req, res)=>{
-        const {latitude,longitude, radius= 50000000000, search =""} =req.query
+        const {latitude,longitude, radius= 50000000000000000, search =""} =req.query
         console.log("la", latitude)
         console.log("lo", longitude)
 

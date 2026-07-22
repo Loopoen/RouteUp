@@ -8,7 +8,7 @@ const dotenv_1 = __importDefault(require("dotenv"));
 dotenv_1.default.config();
 const socket_1 = require("../socket");
 const router = express_1.default.Router();
-router.post("/emit", (req, res) => {
+router.post("/emit", async (req, res) => {
     console.log("HEADER:", req.headers["x-internal-key"]);
     console.log("ENV:", process.env.INTERNAL_SERVICE);
     console.log("BODY:", req.body);

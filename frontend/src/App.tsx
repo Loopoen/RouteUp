@@ -18,6 +18,7 @@ import AddAddressPage from "./pages/Address"
 import CheckOut from "./pages/CheckOut"
 import PaymentSuccess from "./pages/PaymentSuccess"
 import OrderSuccess from "./pages/OrderSuccess"
+import Order from "./pages/Order"
 
 function App() {
  
@@ -49,6 +50,7 @@ function App() {
                      <Route path="/cart" element={<CartPage/>}/>
                      <Route path="/addresses" element={<AddAddressPage/>} />
                      <Route path="/checkout" element={<CheckOut/>}/>
+                     <Route path="/orders" element={<Order/>} />
             </Route>
      
           

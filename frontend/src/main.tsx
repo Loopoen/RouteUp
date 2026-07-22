@@ -12,7 +12,7 @@ export const utilsService = "http://localhost:5002"
 export const realtimeService = "http://localhost:5004"
 
 createRoot(document.getElementById('root')!).render(
-  <StrictMode>
+ 
     <GoogleOAuthProvider clientId='341149613622-i5oh0nsp7dd6ucgfia8djirree4rk4vh.apps.googleusercontent.com'>
       <AppProvider>
           <SocketProvider> 
@@ -22,5 +22,5 @@ createRoot(document.getElementById('root')!).render(
       </AppProvider>
    
     </GoogleOAuthProvider>
-  </StrictMode>,
+  
 )

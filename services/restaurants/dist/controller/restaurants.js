@@ -73,7 +73,7 @@ export const fetchRestaurant = TryCatch(async (req, res) => {
     }
     if (!req.user.restaurantId) {
         const token = jwt.sign({
-            users: {
+            user: {
                 ...req.user,
                 restaurantId: restaurant._id,
             }
@@ -134,7 +134,7 @@ export const updateRestaurant = TryCatch(async (req, res) => {
     });
 });
 export const getNearByRestaurant = TryCatch(async (req, res) => {
-    const { latitude, longitude, radius = 50000000000, search = "" } = req.query;
+    const { latitude, longitude, radius = 50000000000000000, search = "" } = req.query;
     console.log("la", latitude);
     console.log("lo", longitude);
     if (!latitude || !longitude) {
