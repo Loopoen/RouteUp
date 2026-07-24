@@ -8,8 +8,8 @@ const router = express.Router()
 router.post("/emit", async(req, res)=>{
 
     console.log("HEADER:", req.headers["x-internal-key"])
-console.log("ENV:", process.env.INTERNAL_SERVICE)
-console.log("BODY:", req.body)
+    console.log("ENV:", process.env.INTERNAL_SERVICE)
+    console.log("BODY:", req.body)
     if(req.headers["x-internal-key"] !== process.env.INTERNAL_SERVICE){
         return res.status(403).json({
             message:"khong giao tiep duoc bay oi"

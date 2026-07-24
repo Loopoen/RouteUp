@@ -300,10 +300,12 @@ export const getMyOrders= TryCatch(
             })
         }
 
+
+        console.log("user._id",req.user._id)
         const order  = await Order.find({
             userId:req.user._id.toString(),
 
-            paymentStatus:"paid",
+            // paymentStatus:"paid",
 
         }).sort({createdAt:-1})
 

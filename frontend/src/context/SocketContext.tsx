@@ -12,13 +12,12 @@ const SocketContext = createContext<SocketContextType>({socket:null})
 export const SocketProvider = ({children}:{children: ReactNode})=>{
     const {isAuth} = useAppData()
 
-    const socketRef = useRef<Socket | null> (null)
+    const socketRef = useRef<Socket | null> (null) // toi luyện
 
     useEffect(()=>{
         if(!isAuth){
             socketRef.current?.disconnect()
             socketRef.current = null
-
             return
         }
 
@@ -48,7 +47,6 @@ export const SocketProvider = ({children}:{children: ReactNode})=>{
 
         return ()=>{
             socket.disconnect()
-
             socketRef.current = null
         }
     }, [isAuth])

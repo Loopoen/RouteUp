@@ -4,8 +4,8 @@ import { createOrder, fetchOrderForPayment, fetchRestaurantOrder, fetchSingleOrd
 const router = express.Router();
 router.post("/new", isAuth, createOrder);
 router.get("/payment/:id", fetchOrderForPayment);
+router.get("/my", isAuth, getMyOrders);
 router.get("/:restaurantId", isAuth, isSeller, fetchRestaurantOrder);
 router.put("/:orderId", isAuth, isSeller, updatedOrderStatus);
-router.get("/my", isAuth, getMyOrders);
 router.get("/:id", isAuth, fetchSingleOrder);
 export default router;

@@ -21,7 +21,7 @@ const RestaurantOrder = ({restaurantId}:{restaurantId:string}) => {
   const [loading, setLoading] = useState(true)
 
   const [audioUnlock, setAudioUnlock] = useState(false)
-  const [soundEnabled, setSoundEnabled] = useState(true) // NEW: bật/tắt âm thanh
+  const [soundEnabled, setSoundEnabled] = useState(true) 
 
   const {socket} = useSocket()
 
@@ -94,7 +94,7 @@ const RestaurantOrder = ({restaurantId}:{restaurantId:string}) => {
     socket.on("order:new", onNewOrder)
 
     return ()=>{
-      socket.off("order:new", onNewOrder)
+      socket.off("order:new", onNewOrder) 
     }
   }, [socket, audioUnlock, soundEnabled])
 
