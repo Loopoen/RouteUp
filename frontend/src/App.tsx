@@ -19,6 +19,7 @@ import CheckOut from "./pages/CheckOut"
 import PaymentSuccess from "./pages/PaymentSuccess"
 import OrderSuccess from "./pages/OrderSuccess"
 import Order from "./pages/Order"
+import RiderDashBoard from "./pages/RiderDashBoard"
 
 function App() {
  
@@ -26,6 +27,10 @@ function App() {
 
   if(user && user.role === "seller"){
       return <Restaurant/>
+  } 
+
+   if(user && user.role === "rider"){
+      return <RiderDashBoard/>
   } 
   return (
     <>
