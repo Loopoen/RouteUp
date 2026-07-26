@@ -42,10 +42,22 @@
       }
     },
 
-       {
+    {
       "label": "realtime",
       "type": "shell",
       "command": "cd services/realtime && npm run dev",
+      "isBackground": true,
+      "presentation": {
+        "panel": "dedicated",
+        "group": "routeup"
+      }
+    },
+
+
+    {
+      "label": "rider",
+      "type": "shell",
+      "command": "cd services/rider && npm run dev",
       "isBackground": true,
       "presentation": {
         "panel": "dedicated",
@@ -59,7 +71,8 @@
         "auth",
         "restaurants",
         "utils",
-        "realtime"
+        "realtime",
+        "rider"
       ],
       "dependsOrder": "parallel",
       "problemMatcher": [],

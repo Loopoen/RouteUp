@@ -24,6 +24,8 @@ export const addRiderProfile = TryCatch(
 
         const file = req.file
 
+        console.log("file", file)
+
         if(!file){
             return res.status(400).json({
                 message:"chua co hinh"
@@ -43,7 +45,7 @@ export const addRiderProfile = TryCatch(
             buffer:fileBuffer.content
         })
 
-        const [phoneNumber, cccdNumber, drivingLicenseNumber, latitude, longitude] = req.body
+        const {phoneNumber, cccdNumber, drivingLicenseNumber, latitude, longitude} = req.body
 
         if(!phoneNumber  || !cccdNumber || !drivingLicenseNumber || latitude ===undefined || longitude === undefined){
             return res.status(400).json({

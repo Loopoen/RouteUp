@@ -8,7 +8,7 @@ const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const isAuth = async (req, res, next) => {
     try {
         const authHeader = req.headers.authorization;
-        console.log(req.headers.authorization);
+        // console.log(req.headers.authorization)
         if (!authHeader || !authHeader.startsWith("Bearer ")) {
             res.status(401).json({
                 message: "dang nhap nhap loi khong co header"

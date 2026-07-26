@@ -21,6 +21,7 @@ exports.addRiderProfile = (0, TryCatch_1.default)(async (req, res) => {
         });
     }
     const file = req.file;
+    console.log("file", file);
     if (!file) {
         return res.status(400).json({
             message: "chua co hinh"
@@ -35,7 +36,7 @@ exports.addRiderProfile = (0, TryCatch_1.default)(async (req, res) => {
     const { data: uploadResult } = await axios_1.default.post(`${process.env.UTILS_SERVICE}/api/upload`, {
         buffer: fileBuffer.content
     });
-    const [phoneNumber, cccdNumber, drivingLicenseNumber, latitude, longitude] = req.body;
+    const { phoneNumber, cccdNumber, drivingLicenseNumber, latitude, longitude } = req.body;
     if (!phoneNumber || !cccdNumber || !drivingLicenseNumber || latitude === undefined || longitude === undefined) {
         return res.status(400).json({
             message: "cac thuoc tinh chu dien day du"
