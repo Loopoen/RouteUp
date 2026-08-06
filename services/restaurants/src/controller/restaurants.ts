@@ -5,6 +5,7 @@ import TryCatch from "../middlewaves/TryCatch.js";
 import Retaurants from "../models/Retaurants.js";
 import jwt from 'jsonwebtoken';
 import { Request } from 'express';
+// import User from '../../../auth/src/model/User';
 
 
 export const addRestaurant = TryCatch(async (req: AuthenticatedRequest, res) => {
@@ -110,6 +111,11 @@ export const fetchRestaurant = TryCatch(
                 }
             );
 
+
+            // User.findByIdAndUpdate(req.user._id, {restaurantId:restaurant._id})
+
+            
+
             return res.json({
                 restaurant, token
             })
@@ -199,7 +205,7 @@ export const updateRestaurant  = TryCatch(
 
 export const getNearByRestaurant = TryCatch(
     async(req, res)=>{
-        const {latitude,longitude, radius= 50000000000000000, search =""} =req.query
+        const {latitude,longitude, radius= 50000000000000000000, search =""} =req.query
         console.log("la", latitude)
         console.log("lo", longitude)
 

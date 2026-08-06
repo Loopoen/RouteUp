@@ -156,7 +156,7 @@ const orderSchema = new Schema<IOrder>(
         "preparing",
         "ready_for_rider",
         "rider_assigned",
-        "picked_up",
+        "pick_up",
         "delivered",
       
       ],

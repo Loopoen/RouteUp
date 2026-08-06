@@ -9,9 +9,7 @@ let channel;
 const connectRabbitMQ = async () => {
     const connection = await amqplib_1.default.connect(process.env.RABBITMQ_URL);
     channel = await connection.createChannel();
-    await channel.assertQueue(process.env.PAYMENT_QUEUE, {
-        durable: true,
-    });
+    await channel.assertQueue(process.env.RIDER_QUEUE, { durable: true });
     console.log("connect rabbitmq thanh cong");
 };
 exports.connectRabbitMQ = connectRabbitMQ;

@@ -91,7 +91,7 @@ const orderSchema = new Schema({
             "preparing",
             "ready_for_rider",
             "rider_assigned",
-            "picked_up",
+            "pick_up",
             "delivered",
         ],
         default: "placed",

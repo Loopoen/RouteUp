@@ -1,7 +1,7 @@
 import { Request, Response } from "express"
 import User from "../model/User"
 import jwt from "jsonwebtoken"
-import TryCatch from "../middlewaves/trycatch"
+import TryCatch from "../middlewaves/TryCatch"
 import { AuthenticatedRequest } from "../middlewaves/isAuth"
 import { oauth2 } from "googleapis/build/src/apis/oauth2"
 import { oauth2client } from "../config/googleConfig"
@@ -9,6 +9,8 @@ import axios from "axios"
 export const loginUser = TryCatch(async(req, res)=>{
 
      const {code} = req.body
+
+     console.log("code", code)
 
      if(!code){
         return res.status(400).json({
@@ -21,6 +23,9 @@ export const loginUser = TryCatch(async(req, res)=>{
      const googleRes = await oauth2client.getToken(code)
 
      oauth2client.setCredentials(googleRes.tokens)
+
+
+     console.log(googleRes.tokens.access_token)
 
 
   
@@ -52,7 +57,7 @@ export const loginUser = TryCatch(async(req, res)=>{
 })
 
 const  allowedRoles = ["customer", "rider", "seller"] as const 
-type Role = (typeof allowedRoles)[number]
+type Role = (typeof allowedRoles)[number] // 1:customer 2:rider 3:seller
 
 export const addUserRole = TryCatch(async(req:AuthenticatedRequest, res)=>{
     if(!req.user?._id){
@@ -86,8 +91,6 @@ export const addUserRole = TryCatch(async(req:AuthenticatedRequest, res)=>{
 
 
     res.json({user,token})
-
-
 
 
     

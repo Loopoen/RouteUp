@@ -96,7 +96,7 @@ const RiderDashBoard = () => {
     if (!file) return;
     setImage(file);
     setImagePreview(URL.createObjectURL(file));
-  };
+  };  
 
   const handleSubmit = async () => {
     if (!phoneNumber || !cccdNumber || !drivingLicenseNumber) {

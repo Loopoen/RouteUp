@@ -4,6 +4,7 @@ import Address from "../models/Address.js";
 import Cart from "../models/Cart.js";
 import Order from "../models/Order.js";
 import Retaurants from "../models/Retaurants.js";
+import { publishEvent } from "../config/order-publisher.js";
 export const createOrder = TryCatch(async (req, res) => {
     const user = req.user;
     if (!user) {
@@ -204,6 +205,15 @@ export const updatedOrderStatus = TryCatch(async (req, res) => {
         }
     });
     // rideer
+    if (status === "ready_for_rider") {
+        console.log("ready_for_rider");
+        await publishEvent("ORDER_READY_FOR_RIDER", {
+            orderId: order._id.toString(),
+            restaurantId: restaurant._id.toString(),
+            location: restaurant.autoLocation
+        });
+        console.log("tap su kien order thanh cong");
+    }
     res.json({
         message: "order update status thanh cong ",
         order
@@ -240,4 +250,105 @@ export const fetchSingleOrder = TryCatch(async (req, res) => {
         });
     }
     res.json(order);
+});
+export const assignRiderToOrder = TryCatch(async (req, res) => {
+    if (req.headers["x-internal-key"] !== process.env.INTERNAL_SERVICE) {
+        return res.status(403).json({
+            message: "khong giao tiep duoc"
+        });
+    }
+    const { orderId, riderId, riderName, riderPhone } = req.body;
+    const order = await Order.findById(orderId);
+    if (order?.riderId !== null) {
+        return res.status(400).json("order da sang san");
+    }
+    const orderUpdated = await Order.findOneAndUpdate({ _id: orderId, riderId: null }, {
+        riderId,
+        riderName,
+        riderPhone,
+        status: "rider_assigned",
+    }, { new: true });
+    await axios.post(`${process.env.REALTIME_SERVICE}/api/v1/internal/emit`, {
+        event: "order:rider_assigned",
+        room: `user:${order.restaurantId}`,
+        payload: order
+    }, {
+        headers: {
+            "x-internal-key": process.env.INTERNAL_SERVICE
+        }
+    });
+    res.json({
+        message: "rider assigned thanh cong",
+        success: true,
+        order: orderUpdated
+    });
+});
+export const getCurrentOrderForRider = TryCatch(async (req, res) => {
+    if (req.headers["x-internal-key"] !== process.env.INTERNAL_SERVICE) {
+        return res.status(403).json({
+            message: "khong ket noi duoc"
+        });
+    }
+    const { riderId } = req.body;
+    if (!riderId) {
+        return res.status(400).json({
+            message: "khong co rider Id"
+        });
+    }
+    const order = await Order.findOne({
+        riderId,
+        status: { $ne: "delivered" },
+    }).populate("restaurantId");
+    if (!order) {
+        return res.status(404).json({
+            message: "khong tim thay order"
+        });
+    }
+    res.json(order);
+});
+export const updateOrderStatus = TryCatch(async (req, res) => {
+    if (req.headers["x-internal-key"] !== process.env.INTERNAL_SERVICE) {
+        return res.status(403).json({
+            message: "khong ket noi duoc"
+        });
+    }
+    const { orderId } = req.body;
+    const order = await Order.findById(orderId);
+    if (!order) {
+        return res.status(404).json({
+            message: "khong tim duoc order"
+        });
+    }
+    if (order.status === "rider_assigned") {
+        order.status = "pick_up";
+        await order.save();
+        await axios.post(`${process.env.REALTIME_SERVICE}/api/v1/internal/emit`, {
+            event: "order:rider_assigned",
+            room: `user:${order.restaurantId}`,
+            payload: order
+        }, {
+            headers: {
+                "x-internal-key": process.env.INTERNAL_SERVICE
+            }
+        });
+        return res.json({
+            message: "Order update thanh cong"
+        });
+    }
+    if (order.status === "pick_up") {
+        order.status = "delivered";
+        await order.save();
+        await axios.post(`${process.env.REALTIME_SERVICE}/api/v1/internal/emit`, {
+            event: "order:rider_assigned",
+            room: `user:${order.restaurantId}`,
+            payload: order
+        }, {
+            headers: {
+                "x-internal-key": process.env.INTERNAL_SERVICE
+            }
+        });
+        return res.json({
+            message: "Order update thanh cong"
+        });
+    }
 });

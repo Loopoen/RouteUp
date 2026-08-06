@@ -8,10 +8,12 @@ const dotenv_1 = __importDefault(require("dotenv"));
 const db_1 = __importDefault(require("./config/db"));
 const cors_1 = __importDefault(require("cors"));
 const rider_1 = __importDefault(require("./route/rider"));
+const rabbitmq_1 = require("./config/rabbitmq");
 dotenv_1.default.config();
 const app = (0, express_1.default)();
 app.use((0, cors_1.default)());
 app.use(express_1.default.json());
+(0, rabbitmq_1.connectRabbitMQ)();
 app.use("/api/rider", rider_1.default);
 app.listen(process.env.PORT, () => {
     console.log(`rider run ${process.env.PORT}`);

@@ -6,11 +6,12 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.myProfile = exports.addUserRole = exports.loginUser = void 0;
 const User_1 = __importDefault(require("../model/User"));
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
-const trycatch_1 = __importDefault(require("../middlewaves/trycatch"));
+const TryCatch_1 = __importDefault(require("../middlewaves/TryCatch"));
 const googleConfig_1 = require("../config/googleConfig");
 const axios_1 = __importDefault(require("axios"));
-exports.loginUser = (0, trycatch_1.default)(async (req, res) => {
+exports.loginUser = (0, TryCatch_1.default)(async (req, res) => {
     const { code } = req.body;
+    console.log("code", code);
     if (!code) {
         return res.status(400).json({
             message: "Auth code bat buoc"
@@ -18,6 +19,7 @@ exports.loginUser = (0, trycatch_1.default)(async (req, res) => {
     }
     const googleRes = await googleConfig_1.oauth2client.getToken(code);
     googleConfig_1.oauth2client.setCredentials(googleRes.tokens);
+    console.log(googleRes.tokens.access_token);
     const userRes = await axios_1.default.get(`https://www.googleapis.com/oauth2/v1/userinfo?alt=json&access_token=${googleRes.tokens.access_token}`);
     console.log("USER:", userRes.data);
     const { email, name, picture } = userRes.data;
@@ -39,7 +41,7 @@ exports.loginUser = (0, trycatch_1.default)(async (req, res) => {
     });
 });
 const allowedRoles = ["customer", "rider", "seller"];
-exports.addUserRole = (0, trycatch_1.default)(async (req, res) => {
+exports.addUserRole = (0, TryCatch_1.default)(async (req, res) => {
     if (!req.user?._id) {
         return res.status(401).json({
             message: 'khong co user'
@@ -62,7 +64,7 @@ exports.addUserRole = (0, trycatch_1.default)(async (req, res) => {
     });
     res.json({ user, token });
 });
-exports.myProfile = (0, trycatch_1.default)(async (req, res) => {
+exports.myProfile = (0, TryCatch_1.default)(async (req, res) => {
     try {
         const user = req.user;
         res.json(user);

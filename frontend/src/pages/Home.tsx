@@ -6,8 +6,7 @@ import toast from "react-hot-toast";
 import axios from "axios";
 import { restaurantService } from "../main";
 import RestaurantCard from "../components/RestaurantCard";
-import Navbar from "../components/Navbar";
-import { FaLocationDot } from "react-icons/fa6";
+
 
 const Home = () => {
   const { location } = useAppData();

@@ -3,6 +3,7 @@ import getBuffer from "../config/datauri.js";
 import TryCatch from "../middlewaves/TryCatch.js";
 import Retaurants from "../models/Retaurants.js";
 import jwt from 'jsonwebtoken';
+// import User from '../../../auth/src/model/User';
 export const addRestaurant = TryCatch(async (req, res) => {
     const user = req.user;
     if (!user) {
@@ -80,6 +81,7 @@ export const fetchRestaurant = TryCatch(async (req, res) => {
         }, process.env.JWT_SECRET, {
             expiresIn: "15d"
         });
+        // User.findByIdAndUpdate(req.user._id, {restaurantId:restaurant._id})
         return res.json({
             restaurant, token
         });
@@ -134,7 +136,7 @@ export const updateRestaurant = TryCatch(async (req, res) => {
     });
 });
 export const getNearByRestaurant = TryCatch(async (req, res) => {
-    const { latitude, longitude, radius = 50000000000000000, search = "" } = req.query;
+    const { latitude, longitude, radius = 50000000000000000000, search = "" } = req.query;
     console.log("la", latitude);
     console.log("lo", longitude);
     if (!latitude || !longitude) {

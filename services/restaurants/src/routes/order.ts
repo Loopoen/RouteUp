@@ -1,6 +1,6 @@
 import express from "express"
 import { isAuth, isSeller } from "../middlewaves/isAuth.js"
-import { createOrder, fetchOrderForPayment, fetchRestaurantOrder, fetchSingleOrder, getMyOrders, updatedOrderStatus } from "../controller/Order.js"
+import { assignRiderToOrder, createOrder, fetchOrderForPayment, fetchRestaurantOrder, fetchSingleOrder, getCurrentOrderForRider, getMyOrders, updatedOrderStatus, updateOrderStatus } from "../controller/Order.js"
 
 
 const router = express.Router()
@@ -8,9 +8,14 @@ const router = express.Router()
 router.post("/new",isAuth, createOrder)
 router.get("/payment/:id", fetchOrderForPayment)
 router.get("/my", isAuth, getMyOrders)
+router.put("/assign/rider", assignRiderToOrder)
+router.get("/current/rider", getCurrentOrderForRider)
+router.put("/update/status/rider", updateOrderStatus)
 router.get("/:restaurantId", isAuth, isSeller,fetchRestaurantOrder)
 router.put("/:orderId", isAuth, isSeller, updatedOrderStatus)
 
 router.get("/:id",isAuth, fetchSingleOrder)
+
+
 
 export default router

@@ -169,3 +169,149 @@ export const toggleRiderAvailability = TryCatch(
         })
     }
 )
+
+export const acceptRider = TryCatch(
+    async(req:AuthenticatedRequest, res)=>{
+        const riderUserId = req.user?._id
+
+        const {orderId} = req.params
+
+        if(!riderUserId){
+            return res.status(400).json({
+                message:"dang nhap dum"
+            })
+        }
+
+        const rider = await Rider.findOne(
+            {userId:riderUserId, isAvailable:true}  
+        )
+
+        if(!rider){
+            return res.status(409).json({
+                "message":"rider khong tim duoc"
+            })
+        }
+
+        try{    
+            const {data} = await axios.post(`${process.env.RESTAURANT_SERVICE}/api/order/assign/rider`,
+                {
+                    orderId,
+                    riderId:rider._id.toString(),
+                    riderUserId:rider.userId,
+                    riderName: rider.picture,
+                    riderPhone:rider.phoneNumber
+                },{
+                    headers:{
+                        "x-internal-key": process.env.INTERNAL_SERVICE
+                    }
+                }
+            )
+
+            if(data.success){
+                const riderDetail = await Rider.findOneAndUpdate(
+                    {userId:riderUserId,
+                        isAvailable:true
+                    },
+                    {isAvailable:false},
+                      {new:true}
+                )
+                res.json({message:"Order duoc chap nhan tu rider"})
+            }
+
+
+
+        }
+        catch(err){
+                res.status(400).json({
+                    message:"Order da duoc chap nhan lau roi"
+                })
+        }
+    }
+)
+
+export const fetchMyOrder = TryCatch(
+    async(req:AuthenticatedRequest, res)=>{
+        const riderUserId = req.user?._id
+
+        if(!riderUserId){
+            return res.status(401).json({message:"dang nhap dum"})
+        }
+
+          const rider = await Rider.findOne(
+            {userId:riderUserId}  
+        )
+
+        if(!rider){
+            return res.status(409).json({
+                "message":"rider khong tim duoc"
+            })
+        }
+
+        try{
+            const {data} = await axios.get(`${process.env.RESTAURANT_SERVICE}/api/order/current/rider?riderId={rider._id}`,{
+                headers:{
+                    "x-internal-key": process.env.INTERNAL_SERVICE
+                }
+            })
+
+            res.json({
+                order:data
+            })
+        }
+        catch(err){
+                res.status(500).json({
+                    message:"sever khong phan hoi"
+                })
+        }
+
+
+    }
+)
+
+export const updateOrderStatus = TryCatch(
+
+    async(req:AuthenticatedRequest, res)=>{
+        const userId = req.user?._id
+
+        if(!userId){
+            return res.status(401).json({
+                message:"dang nhap dum"
+            })
+        }
+        const rider = await Rider.findOne({userId:userId})
+
+        if(!rider){
+
+            return res.status(404).json({
+                message:"khong tim thay rider"
+            })
+        }
+
+        const {orderId} = req.params
+
+        try{
+            const {data} = await axios.put(`${process.env.REALTIME_SERVICE}/api/order/update/rider`,{orderId},{
+                   headers:
+                   {
+                    "x-internal-key": process.env.INTERNAL_SERVICE
+                    }
+                }
+            )
+
+            res.json({
+                message:data.message
+            })
+
+
+        }
+
+        catch(err){
+            res.status(500).json({
+                message:"loi server"
+            })
+        }
+
+    }
+
+
+)

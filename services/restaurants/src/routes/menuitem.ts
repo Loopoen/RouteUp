@@ -7,7 +7,7 @@ import uploadFile from "../middlewaves/multer.js"
 const router = express.Router()
 
 router.post('/new', isAuth, isSeller,uploadFile, addItem)
-router.get('/all/:id', isAuth, isSeller, getAllItem)
+router.get('/all/:id', isAuth, getAllItem)
 router.delete("/:itemId", isAuth, isSeller, deleteItem)
 router.put("/status/:itemId", isAuth, isSeller, toggleItem)
 export default router

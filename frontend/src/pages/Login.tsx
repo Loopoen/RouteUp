@@ -11,7 +11,7 @@ import { useAppData } from "../context/AppContext"
 const Login = ()=>{
 
     const [loading, setLoading] = useState(false)
-    const {setIsAuth, setUser} = useAppData()
+    const {setIsAuth, setUser,} = useAppData()
 
     const navigate = useNavigate()
 
