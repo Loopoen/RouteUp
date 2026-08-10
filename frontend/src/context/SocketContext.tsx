@@ -23,7 +23,7 @@ export const SocketProvider = ({children}:{children: ReactNode})=>{
 
         if(socketRef.current) return
 
-        const socket = io(realtimeService, {
+        const socket = io(realtimeService, { // realtiemService : localhost:5004
             auth:{
                 token: localStorage.getItem("token")
             },

@@ -411,7 +411,7 @@ export const getCurrentOrderForRider = TryCatch(
             })
         }
 
-        const { riderId } = req.body
+        const { riderId } = req.query
         if (!riderId) {
             return res.status(400).json({
                 message: "khong co rider Id"

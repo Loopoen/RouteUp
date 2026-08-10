@@ -1,14 +1,8 @@
-"use strict";
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.updateOrderStatus = exports.fetchMyOrder = exports.acceptRider = exports.toggleRiderAvailability = exports.fetchMyProfile = exports.addRiderProfile = void 0;
-const datauri_1 = __importDefault(require("../config/datauri"));
-const TryCatch_1 = __importDefault(require("../middlewaves/TryCatch"));
-const axios_1 = __importDefault(require("axios"));
-const Rider_1 = require("../model/Rider");
-exports.addRiderProfile = (0, TryCatch_1.default)(async (req, res) => {
+import getBuffer from "../config/datauri.js";
+import TryCatch from "../middlewaves/TryCatch.js";
+import axios from "axios";
+import { Rider } from "../model/Rider.js";
+export const addRiderProfile = TryCatch(async (req, res) => {
     const user = req.user;
     if (!user) {
         return res.status(401).json({
@@ -27,13 +21,13 @@ exports.addRiderProfile = (0, TryCatch_1.default)(async (req, res) => {
             message: "chua co hinh"
         });
     }
-    const fileBuffer = (0, datauri_1.default)(file);
+    const fileBuffer = getBuffer(file);
     if (!fileBuffer?.content) {
         return res.status(500).json({
             message: "loi khong tao duoc anh"
         });
     }
-    const { data: uploadResult } = await axios_1.default.post(`${process.env.UTILS_SERVICE}/api/upload`, {
+    const { data: uploadResult } = await axios.post(`${process.env.UTILS_SERVICE}/api/upload`, {
         buffer: fileBuffer.content
     });
     const { phoneNumber, cccdNumber, drivingLicenseNumber, latitude, longitude } = req.body;
@@ -42,7 +36,7 @@ exports.addRiderProfile = (0, TryCatch_1.default)(async (req, res) => {
             message: "cac thuoc tinh chu dien day du"
         });
     }
-    const existingProfile = await Rider_1.Rider.findOne({
+    const existingProfile = await Rider.findOne({
         userId: user._id,
     });
     if (existingProfile) {
@@ -50,7 +44,7 @@ exports.addRiderProfile = (0, TryCatch_1.default)(async (req, res) => {
             message: "rider nay da ton tai"
         });
     }
-    const riderProfile = await Rider_1.Rider.create({
+    const riderProfile = await Rider.create({
         userId: user._id,
         picture: uploadResult.url,
         phoneNumber,
@@ -68,17 +62,17 @@ exports.addRiderProfile = (0, TryCatch_1.default)(async (req, res) => {
         riderProfile
     });
 });
-exports.fetchMyProfile = (0, TryCatch_1.default)(async (req, res) => {
+export const fetchMyProfile = TryCatch(async (req, res) => {
     const user = req.user;
     if (!user) {
         return res.status(403).json({
             message: "dang nhap dum"
         });
     }
-    const account = await Rider_1.Rider.findOne({ userId: user._id });
+    const account = await Rider.findOne({ userId: user._id });
     res.json(account);
 });
-exports.toggleRiderAvailability = (0, TryCatch_1.default)(async (req, res) => {
+export const toggleRiderAvailability = TryCatch(async (req, res) => {
     const user = req.user;
     if (!user) {
         return res.status(401).json({
@@ -101,7 +95,7 @@ exports.toggleRiderAvailability = (0, TryCatch_1.default)(async (req, res) => {
             message: "location chua co"
         });
     }
-    const rider = await Rider_1.Rider.findOne({
+    const rider = await Rider.findOne({
         userId: user._id
     });
     if (!rider) {
@@ -120,12 +114,13 @@ exports.toggleRiderAvailability = (0, TryCatch_1.default)(async (req, res) => {
         coordinates: [longitude, latitude],
     };
     rider.lastActive = new Date();
+    await rider.save();
     res.json({
         message: isAvailable ? "rider con song" : "rider offline roi",
         rider
     });
 });
-exports.acceptRider = (0, TryCatch_1.default)(async (req, res) => {
+export const acceptRider = TryCatch(async (req, res) => {
     const riderUserId = req.user?._id;
     const { orderId } = req.params;
     if (!riderUserId) {
@@ -133,18 +128,17 @@ exports.acceptRider = (0, TryCatch_1.default)(async (req, res) => {
             message: "dang nhap dum"
         });
     }
-    const rider = await Rider_1.Rider.findOne({ userId: riderUserId, isAvailable: true });
+    const rider = await Rider.findOne({ userId: riderUserId, isAvailable: true });
     if (!rider) {
         return res.status(409).json({
             "message": "rider khong tim duoc"
         });
     }
     try {
-        const { data } = await axios_1.default.post(`${process.env.RESTAURANT_SERVICE}/api/order/assign/rider`, {
+        const { data } = await axios.put(`${process.env.RESTAURANT_SERVICE}/api/order/assign/rider`, {
             orderId,
             riderId: rider._id.toString(),
             riderUserId: rider.userId,
-            riderName: rider.picture,
             riderPhone: rider.phoneNumber
         }, {
             headers: {
@@ -152,31 +146,41 @@ exports.acceptRider = (0, TryCatch_1.default)(async (req, res) => {
             }
         });
         if (data.success) {
-            const riderDetail = await Rider_1.Rider.findOneAndUpdate({ userId: riderUserId,
+            const riderDetail = await Rider.findOneAndUpdate({ userId: riderUserId,
                 isAvailable: true
             }, { isAvailable: false }, { new: true });
             res.json({ message: "Order duoc chap nhan tu rider" });
         }
     }
     catch (err) {
-        res.status(400).json({
-            message: "Order da duoc chap nhan lau roi"
+        if (axios.isAxiosError(err)) {
+            console.log("========== ACCEPT RIDER ERROR ==========");
+            console.log("URL:", err.config?.url);
+            console.log("METHOD:", err.config?.method);
+            console.log("STATUS:", err.response?.status);
+            console.log("DATA:", err.response?.data);
+        }
+        else {
+            console.log(err);
+        }
+        return res.status(500).json({
+            message: "Loi khi nhan order"
         });
     }
 });
-exports.fetchMyOrder = (0, TryCatch_1.default)(async (req, res) => {
+export const fetchMyOrder = TryCatch(async (req, res) => {
     const riderUserId = req.user?._id;
     if (!riderUserId) {
         return res.status(401).json({ message: "dang nhap dum" });
     }
-    const rider = await Rider_1.Rider.findOne({ userId: riderUserId });
+    const rider = await Rider.findOne({ userId: riderUserId });
     if (!rider) {
         return res.status(409).json({
             "message": "rider khong tim duoc"
         });
     }
     try {
-        const { data } = await axios_1.default.get(`${process.env.RESTAURANT_SERVICE}/api/order/current/rider?riderId={rider._id}`, {
+        const { data } = await axios.get(`${process.env.RESTAURANT_SERVICE}/api/order/current/rider?riderId=${rider._id.toString()}`, {
             headers: {
                 "x-internal-key": process.env.INTERNAL_SERVICE
             }
@@ -186,19 +190,30 @@ exports.fetchMyOrder = (0, TryCatch_1.default)(async (req, res) => {
         });
     }
     catch (err) {
-        res.status(500).json({
-            message: "sever khong phan hoi"
+        if (axios.isAxiosError(err)) {
+            console.log("========== AXIOS ERROR ==========");
+            console.log("URL:", err.config?.url);
+            console.log("STATUS:", err.response?.status);
+            console.log("DATA:", err.response?.data);
+            console.log("MESSAGE:", err.message);
+        }
+        else {
+            console.log("========== UNKNOWN ERROR ==========");
+            console.log(err);
+        }
+        return res.status(500).json({
+            message: "server khong phan hoi"
         });
     }
 });
-exports.updateOrderStatus = (0, TryCatch_1.default)(async (req, res) => {
+export const updateOrderStatus = TryCatch(async (req, res) => {
     const userId = req.user?._id;
     if (!userId) {
         return res.status(401).json({
             message: "dang nhap dum"
         });
     }
-    const rider = await Rider_1.Rider.findOne({ userId: userId });
+    const rider = await Rider.findOne({ userId: userId });
     if (!rider) {
         return res.status(404).json({
             message: "khong tim thay rider"
@@ -206,7 +221,7 @@ exports.updateOrderStatus = (0, TryCatch_1.default)(async (req, res) => {
     }
     const { orderId } = req.params;
     try {
-        const { data } = await axios_1.default.put(`${process.env.REALTIME_SERVICE}/api/order/update/rider`, { orderId }, {
+        const { data } = await axios.put(`${process.env.REALTIME_SERVICE}/api/order/update/status/rider`, { orderId }, {
             headers: {
                 "x-internal-key": process.env.INTERNAL_SERVICE
             }

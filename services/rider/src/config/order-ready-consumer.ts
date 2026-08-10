@@ -1,6 +1,6 @@
     import axios from "axios"
-    import { Rider } from "../model/Rider"
-    import { getChannel } from "./rabbitmq"
+    import { Rider } from "../model/Rider.js"
+    import { getChannel } from "./rabbitmq.js"
 
 
 
@@ -13,8 +13,10 @@
                 return 
             }
 
+            console.log("luong chay toi consumer")
+
             try{
-                console.log("nhan duoc msg" ,msg.content.toString)
+                console.log("nhan duoc msg" ,msg.content.toString())
 
                 const event  = JSON.parse(msg.content.toString())
 
@@ -38,7 +40,7 @@
                     location:{
                         $near:{
                             $geometry:location,
-                            $maxDistance:500
+                            $maxDistance:50000000000
 
                         }
                     }
@@ -48,6 +50,8 @@
                     console.log("khong co rider nao gan")
 
                     channel.ack(msg)
+
+                    return
                 }
 
                 for(const rider of riders){
@@ -58,7 +62,7 @@
                             payload:{orderId,restaurantId}
                         },{
                             headers:{
-                                "x-internal-key": process.env.INTERNAL_SERVICE_KEY
+                                "x-internal-key": process.env.INTERNAL_SERVICE
                             }
                         })
 

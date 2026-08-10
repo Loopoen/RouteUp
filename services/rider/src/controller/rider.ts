@@ -1,9 +1,9 @@
-import getBuffer from "../config/datauri";
-import { AuthenticatedRequest } from "../middlewaves/isAuth";
-import TryCatch from "../middlewaves/TryCatch";
+import getBuffer from "../config/datauri.js";
+import { AuthenticatedRequest } from "../middlewaves/isAuth.js";
+import TryCatch from "../middlewaves/TryCatch.js";
 
 import axios from "axios";
-import { Rider } from "../model/Rider";
+import { Rider } from "../model/Rider.js";
 
 export const addRiderProfile = TryCatch(
     async(req:AuthenticatedRequest, res)=>{
@@ -163,6 +163,8 @@ export const toggleRiderAvailability = TryCatch(
 
         rider.lastActive = new Date()
 
+        await rider.save()
+
         res.json({
             message: isAvailable?"rider con song" :"rider offline roi",
             rider
@@ -193,12 +195,12 @@ export const acceptRider = TryCatch(
         }
 
         try{    
-            const {data} = await axios.post(`${process.env.RESTAURANT_SERVICE}/api/order/assign/rider`,
+            const {data} = await axios.put(`${process.env.RESTAURANT_SERVICE}/api/order/assign/rider`,
                 {
                     orderId,
                     riderId:rider._id.toString(),
                     riderUserId:rider.userId,
-                    riderName: rider.picture,
+               
                     riderPhone:rider.phoneNumber
                 },{
                     headers:{
@@ -222,9 +224,19 @@ export const acceptRider = TryCatch(
 
         }
         catch(err){
-                res.status(400).json({
-                    message:"Order da duoc chap nhan lau roi"
-                })
+               if (axios.isAxiosError(err)) {
+        console.log("========== ACCEPT RIDER ERROR ==========");
+        console.log("URL:", err.config?.url);
+        console.log("METHOD:", err.config?.method);
+        console.log("STATUS:", err.response?.status);
+        console.log("DATA:", err.response?.data);
+    } else {
+        console.log(err);
+    }
+
+    return res.status(500).json({
+        message: "Loi khi nhan order"
+    });
         }
     }
 )
@@ -248,7 +260,7 @@ export const fetchMyOrder = TryCatch(
         }
 
         try{
-            const {data} = await axios.get(`${process.env.RESTAURANT_SERVICE}/api/order/current/rider?riderId={rider._id}`,{
+            const {data} = await axios.get(`${process.env.RESTAURANT_SERVICE}/api/order/current/rider?riderId=${rider._id.toString()}`,{
                 headers:{
                     "x-internal-key": process.env.INTERNAL_SERVICE
                 }
@@ -259,9 +271,20 @@ export const fetchMyOrder = TryCatch(
             })
         }
         catch(err){
-                res.status(500).json({
-                    message:"sever khong phan hoi"
-                })
+               if (axios.isAxiosError(err)) {
+        console.log("========== AXIOS ERROR ==========")
+        console.log("URL:", err.config?.url)
+        console.log("STATUS:", err.response?.status)
+        console.log("DATA:", err.response?.data)
+        console.log("MESSAGE:", err.message)
+    } else {
+        console.log("========== UNKNOWN ERROR ==========")
+        console.log(err)
+    }
+
+    return res.status(500).json({
+        message: "server khong phan hoi"
+    })
         }
 
 
@@ -290,7 +313,7 @@ export const updateOrderStatus = TryCatch(
         const {orderId} = req.params
 
         try{
-            const {data} = await axios.put(`${process.env.REALTIME_SERVICE}/api/order/update/rider`,{orderId},{
+            const {data} = await axios.put(`${process.env.REALTIME_SERVICE}/api/order/update/status/rider`,{orderId},{
                    headers:
                    {
                     "x-internal-key": process.env.INTERNAL_SERVICE

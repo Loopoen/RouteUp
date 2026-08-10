@@ -1,21 +1,16 @@
-"use strict";
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.startOrderReadyConsumer = void 0;
-const axios_1 = __importDefault(require("axios"));
-const Rider_1 = require("../model/Rider");
-const rabbitmq_1 = require("./rabbitmq");
-const startOrderReadyConsumer = async () => {
-    const channel = (0, rabbitmq_1.getChannel)();
+import axios from "axios";
+import { Rider } from "../model/Rider.js";
+import { getChannel } from "./rabbitmq.js";
+export const startOrderReadyConsumer = async () => {
+    const channel = getChannel();
     channel.consume(process.env.ORDER_READY_QUEUE, async (msg) => {
         if (!msg) {
             console.log("chua co msg tai rider");
             return;
         }
+        console.log("luong chay toi consumer");
         try {
-            console.log("nhan duoc msg", msg.content.toString);
+            console.log("nhan duoc msg", msg.content.toString());
             const event = JSON.parse(msg.content.toString());
             console.log("event type", event.type);
             if (event.type !== "ORDER_READY_FOR_RIDER") {
@@ -25,29 +20,30 @@ const startOrderReadyConsumer = async () => {
             }
             const { orderId, restaurantId, location } = event.data;
             console.log("da nhan duoc data su kien");
-            const riders = await Rider_1.Rider.find({
+            const riders = await Rider.find({
                 isAvailable: true,
                 isVerified: true,
                 location: {
                     $near: {
                         $geometry: location,
-                        $maxDistance: 500
+                        $maxDistance: 50000000000
                     }
                 }
             });
             if (riders.length === 0) {
                 console.log("khong co rider nao gan");
                 channel.ack(msg);
+                return;
             }
             for (const rider of riders) {
                 try {
-                    await axios_1.default.post(`${process.env.REALTIME_SERVICE}/api/v1/internal/emit`, {
+                    await axios.post(`${process.env.REALTIME_SERVICE}/api/v1/internal/emit`, {
                         event: "order:available",
                         room: `user:${rider.userId}`,
                         payload: { orderId, restaurantId }
                     }, {
                         headers: {
-                            "x-internal-key": process.env.INTERNAL_SERVICE_KEY
+                            "x-internal-key": process.env.INTERNAL_SERVICE
                         }
                     });
                     console.log("tao phong rider thanh cong");
@@ -64,4 +60,3 @@ const startOrderReadyConsumer = async () => {
         }
     });
 };
-exports.startOrderReadyConsumer = startOrderReadyConsumer;

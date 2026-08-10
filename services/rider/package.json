@@ -12,7 +12,7 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "type": "commonjs",
+  "type": "module",
   "dependencies": {
     "@types/amqp": "^0.2.9",
     "@types/amqplib": "^0.10.8",

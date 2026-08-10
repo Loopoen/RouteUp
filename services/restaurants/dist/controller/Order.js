@@ -289,7 +289,7 @@ export const getCurrentOrderForRider = TryCatch(async (req, res) => {
             message: "khong ket noi duoc"
         });
     }
-    const { riderId } = req.body;
+    const { riderId } = req.query;
     if (!riderId) {
         return res.status(400).json({
             message: "khong co rider Id"

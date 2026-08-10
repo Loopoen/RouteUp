@@ -100,11 +100,13 @@ const Order = () => {
     socket.on("connect", onConnect);
     socket.on("disconnect", onDisconnect);
     socket.on("order:update", onOrderUpdate);
+      socket.on("order:rider_assigned", onOrderUpdate)
 
     return () => {
       socket.off("connect", onConnect);
       socket.off("disconnect", onDisconnect);
       socket.off("order:update", onOrderUpdate);
+      socket.off("order:rider_assigned", onOrderUpdate)
     };
   }, [socket]);
 
@@ -132,6 +134,8 @@ const Order = () => {
     }
     return grouped;
   }, [orders]);
+
+  
 
   const totalActive = orders.length;
 

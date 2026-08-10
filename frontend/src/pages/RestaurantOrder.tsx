@@ -98,6 +98,22 @@ const RestaurantOrder = ({restaurantId}:{restaurantId:string}) => {
     }
   }, [socket, audioUnlock, soundEnabled])
 
+  useEffect(()=>{
+    if(!socket){
+      return
+    }
+
+    const onUpdateOrder = () =>{
+      fetchOrders()
+    }
+
+    socket.on("order:rider_assigned", onUpdateOrder)
+    return()=>{
+      socket.off("order:rider_assigned", onUpdateOrder)
+    }
+
+  },[socket])
+
   const activeOrder = order.filter((o)=>{
     return ACTIVE_STATUSES.includes(o.status)
   })

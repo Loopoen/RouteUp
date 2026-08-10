@@ -1,7 +1,4 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.isSeller = void 0;
-const isSeller = (req, res, next) => {
+export const isSeller = (req, res, next) => {
     try {
         if (!req.user) {
             res.status(401).json({
@@ -24,4 +21,3 @@ const isSeller = (req, res, next) => {
         });
     }
 };
-exports.isSeller = isSeller;

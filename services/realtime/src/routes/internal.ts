@@ -32,4 +32,8 @@ router.post("/emit", async(req, res)=>{
     return res.json({success:true})
 })
 
+    // event:"order:available",
+    //                         room:`user:${rider.userId}`,
+    //                         payload:{orderId,restaurantId}
+
 export default router

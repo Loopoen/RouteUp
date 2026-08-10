@@ -4,6 +4,8 @@ import type { IOrder } from "../type";
 import { ORDER_ACTION } from '../utils/OrderFlow';
 import { restaurantService } from "../main";
 import toast from "react-hot-toast";
+import { TbLoader2 } from "react-icons/tb";
+import { BiRefresh } from "react-icons/bi";
 
 interface props {
   order: IOrder,
@@ -35,6 +37,9 @@ const OrderCard = ({ order, onStatusUpdate }: props) => {
 
   const [loading, setLoading] = useState(false)
 
+  const [retryVisible, setRetryVisible] = useState(false)
+
+ 
   // NEW: state cục bộ để hiển thị ngay, không đợi fetch lại từ cha
   const [localStatus, setLocalStatus] = useState(order.status)
 
@@ -42,6 +47,20 @@ const OrderCard = ({ order, onStatusUpdate }: props) => {
   useEffect(() => {
     setLocalStatus(order.status)
   }, [order.status])
+   useEffect(()=>{
+    if(localStatus != "ready_for_rider"){
+      setRetryVisible(false)
+
+      return
+    }
+
+    const timer = setTimeout(()=>{
+      setRetryVisible(true)
+    }, 10000)
+
+    return ()=> clearTimeout(timer)
+  }, [localStatus])
+
 
   const action = ORDER_ACTION[localStatus] || []
 
@@ -50,6 +69,7 @@ const OrderCard = ({ order, onStatusUpdate }: props) => {
 
     try {
       setLoading(true)
+      setRetryVisible(false)
       setLocalStatus(status) // NEW: cập nhật giao diện ngay lập tức (optimistic)
 
       await axios.put(`${restaurantService}/api/order/${order._id}`, { status }, {
@@ -143,6 +163,29 @@ const OrderCard = ({ order, onStatusUpdate }: props) => {
           ))}
         </div>
       )}
+      {localStatus === "ready_for_rider" && retryVisible && (
+  <div className="pt-2">
+    <button
+      onClick={() => updateStatus("ready_for_rider")}
+      disabled={loading}
+      className="inline-flex items-center gap-1.5 rounded-md border border-amber-200
+        bg-amber-50 text-amber-700 text-sm font-medium px-3.5 py-1.5
+        disabled:opacity-70"
+    >
+      {loading ? (
+        <>
+          <TbLoader2 size={15} className="animate-spin" />
+          Đang tìm...
+        </>
+      ) : (
+        <>
+          <BiRefresh size={15} />
+          Tìm tài xế lại
+        </>
+      )}
+    </button>
+  </div>
+    )}
     </div>
   );
 };

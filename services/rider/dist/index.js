@@ -1,21 +1,18 @@
-"use strict";
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-const express_1 = __importDefault(require("express"));
-const dotenv_1 = __importDefault(require("dotenv"));
-const db_1 = __importDefault(require("./config/db"));
-const cors_1 = __importDefault(require("cors"));
-const rider_1 = __importDefault(require("./route/rider"));
-const rabbitmq_1 = require("./config/rabbitmq");
-dotenv_1.default.config();
-const app = (0, express_1.default)();
-app.use((0, cors_1.default)());
-app.use(express_1.default.json());
-(0, rabbitmq_1.connectRabbitMQ)();
-app.use("/api/rider", rider_1.default);
+import express from 'express';
+import dotenv from 'dotenv';
+import connectDB from './config/db.js';
+import cors from 'cors';
+import riderRoute from './route/rider.js';
+import { connectRabbitMQ } from './config/rabbitmq.js';
+import { startOrderReadyConsumer } from './config/order-ready-consumer.js';
+dotenv.config();
+const app = express();
+app.use(cors());
+app.use(express.json());
+await connectRabbitMQ();
+await startOrderReadyConsumer();
+app.use("/api/rider", riderRoute);
 app.listen(process.env.PORT, () => {
     console.log(`rider run ${process.env.PORT}`);
-    (0, db_1.default)();
+    connectDB();
 });

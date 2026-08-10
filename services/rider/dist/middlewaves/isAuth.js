@@ -1,11 +1,5 @@
-"use strict";
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.isSeller = exports.isAuth = void 0;
-const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
-const isAuth = async (req, res, next) => {
+import jwt from 'jsonwebtoken';
+export const isAuth = async (req, res, next) => {
     try {
         const authHeader = req.headers.authorization;
         // console.log(req.headers.authorization)
@@ -22,7 +16,7 @@ const isAuth = async (req, res, next) => {
             });
             return;
         }
-        const decodeValue = jsonwebtoken_1.default.verify(token, process.env.JWT_SECRET);
+        const decodeValue = jwt.verify(token, process.env.JWT_SECRET);
         if (!decodeValue || !decodeValue.user) {
             res.status(401).json({
                 message: "loi stoken"
@@ -39,8 +33,7 @@ const isAuth = async (req, res, next) => {
         });
     }
 };
-exports.isAuth = isAuth;
-const isSeller = async (req, res, next) => {
+export const isSeller = async (req, res, next) => {
     const user = req.user;
     console.log(user);
     if (!user || user.role !== "seller") {
@@ -51,4 +44,3 @@ const isSeller = async (req, res, next) => {
     }
     next();
 };
-exports.isSeller = isSeller;
