@@ -258,6 +258,12 @@ export const assignRiderToOrder = TryCatch(async (req, res) => {
         });
     }
     const { orderId, riderId, riderName, riderPhone } = req.body;
+    // const orderAvailable = await Order.findOne({riderId, status:{$ne:"delivered"}})
+    // if(!orderAvailable){
+    //     return res.status(400).json({
+    //         message:"ban vua co 1 order roi"
+    //     })
+    // }
     const order = await Order.findById(orderId);
     if (order?.riderId !== null) {
         return res.status(400).json("order da sang san");

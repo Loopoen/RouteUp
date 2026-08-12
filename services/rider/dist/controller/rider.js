@@ -221,7 +221,7 @@ export const updateOrderStatus = TryCatch(async (req, res) => {
     }
     const { orderId } = req.params;
     try {
-        const { data } = await axios.put(`${process.env.REALTIME_SERVICE}/api/order/update/status/rider`, { orderId }, {
+        const { data } = await axios.put(`${process.env.RESTAURANT_SERVICE}/api/order/update/status/rider`, { orderId }, {
             headers: {
                 "x-internal-key": process.env.INTERNAL_SERVICE
             }
@@ -231,8 +231,12 @@ export const updateOrderStatus = TryCatch(async (req, res) => {
         });
     }
     catch (err) {
-        res.status(500).json({
-            message: "loi server"
-        });
+        if (axios.isAxiosError(err)) {
+            console.log("========== ACCEPT RIDER ERROR ==========");
+            console.log("URL:", err.config?.url);
+            console.log("METHOD:", err.config?.method);
+            console.log("STATUS:", err.response?.status);
+            console.log("DATA:", err.response?.data);
+        }
     }
 });

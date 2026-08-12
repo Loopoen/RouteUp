@@ -6,6 +6,7 @@ import { riderService } from "../main";
 import toast from "react-hot-toast";
 import audio from "../assets/faaah.mp3";
 import type { IOrder } from "../type";
+import RiderCurrentOrder from "../components/RiderCurrentOrder";
 
 export interface IRider {
   userId: string;
@@ -1087,7 +1088,15 @@ const RiderDashBoard = () => {
         </div>
 
       </div>
+
+        {currentOrder && <div className="mx-auto max-w-md px-4 space-y-4">
+            <RiderCurrentOrder order = {currentOrder} onStateUpdate = {fetchCurrentOrder}/>
+          
+      </div>}
     </div>
+
+
+  
   );
 };
 
