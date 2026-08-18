@@ -109,7 +109,7 @@
         longitude:number
     }
 
-    status : "placed" | "accepted" | "preparing" | "ready_for_rider" | "rider_assigned" | "picked_up" | "delivered" | "cancelled",
+    status : "placed" | "accepted" | "preparing" | "ready_for_rider" | "rider_assigned" | "pick_up" | "delivered" | "cancelled",
     
     
     paymentMethod: "razorpay" | "stripe",

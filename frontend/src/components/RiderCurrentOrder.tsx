@@ -16,7 +16,7 @@ const STATUS_LABEL: Record<IOrder["status"], string> = {
   preparing: "Đang chuẩn bị",
   ready_for_rider: "Chờ tài xế",
   rider_assigned: "Đã nhận đơn",
-  picked_up: "Đang giao",
+  pick_up: "Đang giao",
   delivered: "Đã giao",
   cancelled: "Đã huỷ",
 };
@@ -27,15 +27,15 @@ const STATUS_STYLE: Record<IOrder["status"], string> = {
   preparing: "bg-blue-50 text-blue-700 ring-blue-600/20",
   ready_for_rider: "bg-amber-50 text-amber-700 ring-amber-600/20",
   rider_assigned: "bg-amber-50 text-amber-700 ring-amber-600/20",
-  picked_up: "bg-emerald-50 text-emerald-700 ring-emerald-600/20",
+  pick_up: "bg-emerald-50 text-emerald-700 ring-emerald-600/20",
   delivered: "bg-gray-100 text-gray-600 ring-gray-500/20",
   cancelled: "bg-red-50 text-red-700 ring-red-600/20",
 };
 
 // Chỉ 2 bước rider được phép tự tay chuyển tiếp
 const NEXT_STEP: Partial<Record<IOrder["status"], { next: IOrder["status"]; label: string }>> = {
-  rider_assigned: { next: "picked_up", label: "Xác nhận đã lấy hàng" },
-  picked_up: { next: "delivered", label: "Hoàn thành đơn" },
+  rider_assigned: { next: "pick_up", label: "Xác nhận đã lấy hàng" },
+  pick_up: { next: "delivered", label: "Hoàn thành đơn" },
 };
 
 const formatVND = (n: number) => n.toLocaleString("vi-VN") + "đ";

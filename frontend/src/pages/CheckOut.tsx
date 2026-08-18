@@ -103,7 +103,7 @@ const CheckOut = () => {
     }
   };
 
-  const payWithStripe = async () => {
+  const payWithStripe = async  () => {
     try {
       setLoadingStripe(true);
 
