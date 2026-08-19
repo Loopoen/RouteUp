@@ -2,9 +2,11 @@ import type { IOrder } from "../type";
 import * as L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import "leaflet-routing-machine";
-import { useEffect } from "react";
+import { useEffect, useRef, useState } from "react";
 import { MapContainer, TileLayer, useMap } from "react-leaflet";
 import { MapPin, Package, Bike, Navigation } from "lucide-react";
+import axios from "axios";
+import { realtimeService } from "../main";
 
 declare module "leaflet" {
   namespace Routing {
@@ -66,13 +68,11 @@ const deliveryIcon = new L.DivIcon({
 
 const Routing = ({ from, to }: RoutingProps) => {
   const map = useMap();
+  const controlRef = useRef<any>(null);
 
   useEffect(() => {
     const control = L.Routing.control({
-      waypoints: [
-        L.latLng(from[0], from[1]),
-        L.latLng(to[0], to[1]),
-      ],
+      waypoints: [L.latLng(from[0], from[1]), L.latLng(to[0], to[1])],
 
       lineOptions: {
         styles: [
@@ -104,33 +104,87 @@ const Routing = ({ from, to }: RoutingProps) => {
       }),
     }).addTo(map);
 
+    controlRef.current = control;
+
     return () => {
-      map.removeControl(control);
+      if (controlRef.current) {
+        try {
+          map.removeControl(controlRef.current);
+        } catch (e) {
+          console.warn("Routing control cleanup warning:", e);
+        }
+      }
+      controlRef.current = null;
     };
-  }, [from, to, map]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [map]);
+
+  useEffect(() => {
+    if (!controlRef.current) return;
+    controlRef.current.setWaypoints([L.latLng(from[0], from[1]), L.latLng(to[0], to[1])]);
+  }, [from, to]);
 
   return null;
 };
 
 const RiderOrderMap = ({ order }: Props) => {
-  /*
-   * Đổi những field này theo IOrder thật của bạn
-   */
-  const riderLat = 10.7769;
-  const riderLng = 106.7009;
+  const [riderPosition, setRiderPosition] = useState<[number, number] | null>(null);
 
-  const deliveryLat = order.deliveryAddress.latitude;
-  const deliveryLng = order.deliveryAddress.longitude;
+  useEffect(() => {
+    const fetchLocation = () => {
+      navigator.geolocation.getCurrentPosition(
+        (pos) => {
+          const latitude = pos.coords.latitude;
+          const longitude = pos.coords.longitude;
 
-  const riderPosition: [number, number] = [
-    riderLat,
-    riderLng,
-  ];
+          setRiderPosition([latitude, longitude]);
+
+
+          axios
+            .post(
+              `${realtimeService}/api/v1/internal/emit`,
+              {
+                event: "rider:location",
+                room: `user:${order.userId}`,
+                payload: { latitude, longitude },
+              },
+              {
+                headers: {
+                  "x-internal-key": import.meta.env.VITE_INTERNAL_SERVICE,
+                },
+              }
+            )
+            .catch((err) => {
+              console.error("Gửi vị trí tài xế thất bại:", err);
+            });
+        },
+        (err) => {
+          console.error("Lỗi lấy vị trí GPS:", err);
+        },
+        { enableHighAccuracy: true, timeout: 10000 }
+      );
+    };
+
+    fetchLocation();
+
+    const interval = setInterval(fetchLocation, 10000);
+
+    return () => clearInterval(interval);
+  }, [order.userId]);
 
   const deliveryPosition: [number, number] = [
-    deliveryLat,
-    deliveryLng,
+    order.deliveryAddress.latitude,
+    order.deliveryAddress.longitude,
   ];
+
+
+  if (!riderPosition) {
+    return (
+      <div className="w-full overflow-hidden rounded-2xl border bg-white shadow-sm p-8 text-center text-sm text-gray-500">
+        Đang lấy vị trí hiện tại...
+      </div>
+    );
+  }
 
   return (
     <div className="w-full overflow-hidden rounded-2xl border bg-white shadow-sm">
@@ -141,9 +195,7 @@ const RiderOrderMap = ({ order }: Props) => {
             Delivery Route
           </h2>
 
-          <p className="text-sm text-gray-500">
-            Theo dõi lộ trình giao hàng
-          </p>
+          <p className="text-sm text-gray-500">Theo dõi lộ trình giao hàng</p>
         </div>
 
         <div className="flex items-center gap-2 rounded-full bg-green-50 px-3 py-1.5 text-sm font-medium text-green-600">
@@ -165,10 +217,7 @@ const RiderOrderMap = ({ order }: Props) => {
             url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
           />
 
-          <Routing
-            from={riderPosition}
-            to={deliveryPosition}
-          />
+          <Routing from={riderPosition} to={deliveryPosition} />
         </MapContainer>
 
         {/* Legend */}
@@ -178,9 +227,7 @@ const RiderOrderMap = ({ order }: Props) => {
               🚲
             </div>
 
-            <span className="text-sm text-gray-700">
-              Rider
-            </span>
+            <span className="text-sm text-gray-700">Rider</span>
           </div>
 
           <div className="mt-2 flex items-center gap-3">
@@ -188,9 +235,7 @@ const RiderOrderMap = ({ order }: Props) => {
               📦
             </div>
 
-            <span className="text-sm text-gray-700">
-              Điểm giao hàng
-            </span>
+            <span className="text-sm text-gray-700">Điểm giao hàng</span>
           </div>
         </div>
 
@@ -217,7 +262,6 @@ const RiderOrderMap = ({ order }: Props) => {
           "
         >
           <Navigation size={17} />
-
           Điều hướng
         </button>
       </div>
@@ -227,16 +271,11 @@ const RiderOrderMap = ({ order }: Props) => {
         {/* Rider */}
         <div className="flex items-start gap-3">
           <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-50">
-            <Bike
-              size={20}
-              className="text-blue-600"
-            />
+            <Bike size={20} className="text-blue-600" />
           </div>
 
           <div>
-            <p className="text-xs text-gray-500">
-              Rider
-            </p>
+            <p className="text-xs text-gray-500">Rider</p>
 
             <p className="font-medium text-gray-900">
               {order.riderName || "Rider"}
@@ -251,19 +290,14 @@ const RiderOrderMap = ({ order }: Props) => {
         {/* Delivery */}
         <div className="flex items-start gap-3">
           <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-red-50">
-            <Package
-              size={20}
-              className="text-red-600"
-            />
+            <Package size={20} className="text-red-600" />
           </div>
 
           <div>
-            <p className="text-xs text-gray-500">
-              Địa chỉ giao hàng
-            </p>
+            <p className="text-xs text-gray-500">Địa chỉ giao hàng</p>
 
             <p className="font-medium text-gray-900">
-              {order.deliveryAddress?.address ||
+              {order.deliveryAddress?.formattedAddress ||
                 "Địa chỉ giao hàng"}
             </p>
           </div>

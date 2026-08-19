@@ -13,7 +13,7 @@ const ACTIVE_STATUSES = [
   "preparing",
   "ready_for_rider",
   "rider_assigned",
-  "picked_up",
+  "pick_up",
 ] as const;
 
 type Status = (typeof ACTIVE_STATUSES)[number];
@@ -27,7 +27,7 @@ const STATUS_CONFIG: Record<
   preparing: { label: "Preparing", accent: "#F5A623", soft: "rgba(245,166,35,0.16)", text: "#F7C365" },
   ready_for_rider: { label: "Ready for rider", accent: "#10B981", soft: "rgba(16,185,129,0.15)", text: "#5FD8AC" },
   rider_assigned: { label: "Rider assigned", accent: "#06B6D4", soft: "rgba(6,182,212,0.15)", text: "#5FD3E8" },
-  picked_up: { label: "Picked up", accent: "#8B93A1", soft: "rgba(139,147,161,0.14)", text: "#AEB4C0" },
+  pick_up: { label: "Pick up", accent: "#8B93A1", soft: "rgba(139,147,161,0.14)", text: "#AEB4C0" },
 };
 
 const STATUS_ORDER: Record<Status, number> = ACTIVE_STATUSES.reduce(
@@ -49,7 +49,7 @@ function formatElapsed(createdAt: string, now: number): { text: string; minutes:
 
 function urgencyColor(minutes: number, status: Status): string {
   // picked_up orders are done, never flagged urgent
-  if (status === "picked_up") return "#8B93A1";
+  if (status === "pick_up") return "#8B93A1";
   if (minutes >= 20) return "#F45B69"; // late — red
   if (minutes >= 10) return "#F5A623"; // getting there — amber
   return "#8B93A1"; // fresh — neutral
